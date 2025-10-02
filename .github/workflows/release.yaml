@@ -14,7 +14,7 @@ jobs:
 
       - name: Pull Clickable
         run: |
-          docker pull clickable/ci-20.04-arm64:latest
+          docker pull clickable/ci-ut24.04-1.x-arm64:latest
 
       - name: Download and setup bw
         run: |
@@ -24,8 +24,8 @@ jobs:
 
       - name: Build
         run: |
-          docker run --volume ./:/app clickable/ci-20.04-arm64:latest bash -c "cd /app && clickable build --arch arm64"
+          docker run --volume ./:/app clickable/ci-ut24.04-1.x-arm64:latest bash -c "cd /app && clickable build --arch arm64"
 
       - name: Deploy
         run: |
-          docker run --env OPENSTORE_API_KEY="${{ secrets.OPENSTORE_API_KEY }}" --volume ./:/app clickable/ci-20.04-arm64:latest bash -c "cd /app && clickable publish --arch arm64 -- '${{ github.event.head_commit.message }}'"
+          docker run --env OPENSTORE_API_KEY="${{ secrets.OPENSTORE_API_KEY }}" --volume ./:/app clickable/ci-ut24.04-1.x-arm64:latest bash -c "cd /app && clickable publish --arch arm64 -- '${{ github.event.head_commit.message }}'"
