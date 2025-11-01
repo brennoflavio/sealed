@@ -68,7 +68,7 @@ Page {
                 loadToast.showing = false;
                 if (response.success) {
                     pageStack.clear();
-                    pageStack.push(Qt.resolvedUrl("Main.qml"));
+                    pageStack.push(Qt.resolvedUrl("LoginPage.qml"));
                 } else if (!response.success && response.message) {
                     logoutErrorLabel.text = response.message;
                 }

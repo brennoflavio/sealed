@@ -46,6 +46,9 @@ def bitwarden_setup() -> BitwardenClientResponse:
 
 def bitwarden_status() -> BitwardenStatus:
     result = run_bw(["status"])
+    if "unable to fetch serverconfig" in result.data.lower():
+        return BitwardenStatus.UNAUTHENTICATED
+
     json_result = result.json()
     status = json_result.get("status", "unauthenticated")
     return BitwardenStatus[status.upper()]
