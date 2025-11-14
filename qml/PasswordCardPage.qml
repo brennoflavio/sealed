@@ -1,3 +1,4 @@
+import Lomiri.Components 1.3
 /*
  * Copyright (C) 2025  Brenno Flávio de Almeida
  *
@@ -14,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 2.7
-import Lomiri.Components 1.3
 import QtQuick.Layouts 1.3
 import io.thp.pyotherside 1.4
-import "ut_components"
 import "lib"
+import "ut_components"
 
 Page {
     id: passwordCardPage
@@ -38,40 +38,38 @@ Page {
     property bool codeVisible: false
     property bool favorite: false
     property bool isTrashed: false
+    property string folderId: ""
+    property string folderName: ""
 
-    signal backRequested
+    signal backRequested()
 
     function copyToClipboard(text, itemName) {
         Clipboard.push(text);
         toast.show(i18n.tr("%1 copied to clipboard").arg(itemName));
     }
 
-    header: AppHeader {
-        id: detailHeader
-        pageTitle: name
-        isRootPage: false
-        showSettingsButton: false
-    }
-
     Flickable {
+        contentHeight: contentColumn.height + units.gu(4)
+        clip: true
+
         anchors {
             top: detailHeader.bottom
             left: parent.left
             right: parent.right
             bottom: bottomBar.top
         }
-        contentHeight: contentColumn.height + units.gu(4)
-        clip: true
 
         Column {
             id: contentColumn
+
+            spacing: units.gu(2)
+
             anchors {
                 top: parent.top
                 left: parent.left
                 right: parent.right
                 topMargin: units.gu(2)
             }
-            spacing: units.gu(2)
 
             ConfigurationGroup {
                 title: i18n.tr("Main")
@@ -80,7 +78,15 @@ Page {
                     title: i18n.tr("Name")
                     subtitle: name
                     onCopyClicked: copyToClipboard(name, i18n.tr("Name"))
+                    showDivider: true
                 }
+
+                DetailField {
+                    title: i18n.tr("Folder")
+                    subtitle: folderName || "-"
+                    onCopyClicked: copyToClipboard(folderName, i18n.tr("Folder"))
+                }
+
             }
 
             ConfigurationGroup {
@@ -127,6 +133,7 @@ Page {
                     onVisibilityToggled: passwordCardPage.codeVisible = !passwordCardPage.codeVisible
                     onCopyClicked: copyToClipboard(code, i18n.tr("Security Code"))
                 }
+
             }
 
             ConfigurationGroup {
@@ -155,12 +162,16 @@ Page {
                     subtitle: updated
                     onCopyClicked: copyToClipboard(updated, i18n.tr("Updated date"))
                 }
+
             }
+
         }
+
     }
 
     BottomBar {
         id: bottomBar
+
         anchors {
             left: parent.left
             right: parent.right
@@ -173,18 +184,19 @@ Page {
             text: i18n.tr("Edit")
             onClicked: {
                 pageStack.push(Qt.resolvedUrl("UpsertCardPage.qml"), {
-                        "isEditMode": true,
-                        "cardId": cardId || "",
-                        "cardName": name,
-                        "cardCardholderName": cardholderName,
-                        "cardBrand": brand,
-                        "cardNumber": number,
-                        "cardExpiryMonth": expiryMonth,
-                        "cardExpiryYear": expiryYear,
-                        "cardCode": code,
-                        "cardNotes": notes,
-                        "favorite": favorite
-                    });
+                    "isEditMode": true,
+                    "cardId": cardId || "",
+                    "cardName": name,
+                    "cardCardholderName": cardholderName,
+                    "cardBrand": brand,
+                    "cardNumber": number,
+                    "cardExpiryMonth": expiryMonth,
+                    "cardExpiryYear": expiryYear,
+                    "cardCode": code,
+                    "cardNotes": notes,
+                    "favorite": favorite,
+                    "folderId": passwordCardPage.folderId || ""
+                });
             }
         }
 
@@ -194,11 +206,11 @@ Page {
             text: i18n.tr("Trash")
             onClicked: {
                 trashLoadToast.showing = true;
-                python.call('main.trash_item', [passwordCardPage.cardId], function (result) {
-                        trashLoadToast.showing = false;
-                        pageStack.clear();
-                        pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
-                    });
+                python.call('main.trash_item', [passwordCardPage.cardId], function(result) {
+                    trashLoadToast.showing = false;
+                    pageStack.clear();
+                    pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
+                });
             }
         }
 
@@ -208,11 +220,11 @@ Page {
             text: i18n.tr("Restore")
             onClicked: {
                 loadToast.showing = true;
-                python.call('main.restore_item', [passwordCardPage.cardId], function (result) {
-                        loadToast.showing = false;
-                        pageStack.pop();
-                        pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
-                    });
+                python.call('main.restore_item', [passwordCardPage.cardId], function(result) {
+                    loadToast.showing = false;
+                    pageStack.pop();
+                    pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
+                });
             }
         }
 
@@ -222,13 +234,14 @@ Page {
             text: i18n.tr("Delete")
             onClicked: {
                 deleteLoadToast.showing = true;
-                python.call('main.delete_item', [passwordCardPage.cardId], function (result) {
-                        deleteLoadToast.showing = false;
-                        pageStack.pop();
-                        pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
-                    });
+                python.call('main.delete_item', [passwordCardPage.cardId], function(result) {
+                    deleteLoadToast.showing = false;
+                    pageStack.pop();
+                    pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
+                });
             }
         }
+
     }
 
     Python {
@@ -236,9 +249,9 @@ Page {
 
         Component.onCompleted: {
             addImportPath(Qt.resolvedUrl('../src/'));
-            importModule('main', function () {});
+            importModule('main', function() {
+            });
         }
-
         onError: {
         }
     }
@@ -249,16 +262,28 @@ Page {
 
     LoadToast {
         id: loadToast
+
         message: i18n.tr("Restoring item...")
     }
 
     LoadToast {
         id: deleteLoadToast
+
         message: i18n.tr("Deleting item...")
     }
 
     LoadToast {
         id: trashLoadToast
+
         message: i18n.tr("Moving to trash...")
     }
+
+    header: AppHeader {
+        id: detailHeader
+
+        pageTitle: name
+        isRootPage: false
+        showSettingsButton: false
+    }
+
 }

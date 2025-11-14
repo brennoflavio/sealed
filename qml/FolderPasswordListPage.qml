@@ -21,21 +21,20 @@ import "lib"
 import "ut_components"
 
 Page {
-    id: passwordListPage
+    id: folderPasswordListPage
 
+    property string folderId: ""
+    property string folderName: ""
     property var passwords: []
     property bool isLoading: false
     property string errorMessage: ""
-
-    signal passwordSelected(string passwordId, string passwordName)
-    signal backRequested()
 
     function loadPasswords() {
         isLoading = true;
         errorMessage = "";
         loadToast.showing = true;
         loadToast.message = i18n.tr("Loading passwords...");
-        python.call('main.list_items', [], function(result) {
+        python.call('main.list_folder', [folderId], function(result) {
             isLoading = false;
             loadToast.showing = false;
             if (result.success) {
@@ -100,7 +99,7 @@ Page {
         showSearchBar: true
         searchPlaceholder: i18n.tr("Search passwords...")
         searchFields: ["title", "subtitle"]
-        emptyMessage: errorMessage !== "" ? errorMessage : i18n.tr("No passwords stored")
+        emptyMessage: errorMessage !== "" ? errorMessage : i18n.tr("No passwords in this folder")
         itemActions: [{
             "id": "copy-username",
             "iconName": "contact"
@@ -114,12 +113,12 @@ Page {
         onActionTriggered: {
             if (actionId === "copy-username") {
                 if (item.username)
-                    passwordListPage.copyToClipboard(item.username, i18n.tr("Username"));
+                    folderPasswordListPage.copyToClipboard(item.username, i18n.tr("Username"));
                 else
                     toast.show(i18n.tr("No username"));
             } else if (actionId === "copy-password") {
                 if (item.password)
-                    passwordListPage.copyToClipboard(item.password, i18n.tr("Password"));
+                    folderPasswordListPage.copyToClipboard(item.password, i18n.tr("Password"));
                 else
                     toast.show(i18n.tr("No password"));
             } else if (actionId === "view-details") {
@@ -181,11 +180,7 @@ Page {
             iconName: "reload"
             text: i18n.tr("Refresh")
             onClicked: {
-                loadToast.showing = true;
-                loadToast.message = i18n.tr("Refreshing...");
-                python.call('main.refresh', [], function() {
-                    passwordListPage.loadPasswords();
-                });
+                loadPasswords();
             }
         }
 
@@ -194,22 +189,6 @@ Page {
             text: i18n.tr("Add")
             onClicked: {
                 PopupUtils.open(addEntryDialog);
-            }
-        }
-
-        IconButton {
-            iconName: "folder-symbolic"
-            text: i18n.tr("Folders")
-            onClicked: {
-                pageStack.push(Qt.resolvedUrl("FolderListPage.qml"));
-            }
-        }
-
-        IconButton {
-            iconName: "delete"
-            text: i18n.tr("Trash")
-            onClicked: {
-                pageStack.push(Qt.resolvedUrl("TrashListPage.qml"));
             }
         }
 
@@ -275,7 +254,6 @@ Page {
             });
         }
         onError: {
-            console.log('Python error: ' + traceback);
             errorMessage = i18n.tr("An error occurred");
             isLoading = false;
             loadToast.showing = false;
@@ -289,13 +267,10 @@ Page {
     header: AppHeader {
         id: passwordHeader
 
-        pageTitle: i18n.tr('Passwords')
-        isRootPage: true
-        appIconName: "lock"
-        showSettingsButton: true
-        onSettingsClicked: {
-            pageStack.push(Qt.resolvedUrl("ConfigurationPage.qml"));
-        }
+        pageTitle: folderName
+        isRootPage: false
+        appIconName: "folder-symbolic"
+        showSettingsButton: false
     }
 
 }

@@ -31,12 +31,16 @@ from typing import List
 from src.bitwarden_client import (
     BitwardenItemType,
     BitwardenStatus,
+    bitwarden_delete_folder,
     bitwarden_delete_item,
+    bitwarden_edit_folder,
     bitwarden_edit_item,
+    bitwarden_list_folders,
     bitwarden_list_items,
     bitwarden_login,
     bitwarden_logout,
     bitwarden_restore_item,
+    bitwarden_save_folder,
     bitwarden_save_item,
     bitwarden_set_server,
     bitwarden_setup,
@@ -130,6 +134,8 @@ class Item:
     expiry_month: str
     expiry_year: str
     code: str
+    folder_id: str
+    folder_name: str
 
 
 @dataclass
@@ -176,6 +182,8 @@ def list_items() -> ListItemsResult:
                         expiry_month=item.expiry_month.zfill(2) if item.expiry_month else "",
                         expiry_year=item.expiry_year.zfill(4) if item.expiry_year else "",
                         code=item.code or "",
+                        folder_id=item.folder_id or "",
+                        folder_name=item.folder_name or "",
                     )
                 )
 
@@ -201,7 +209,13 @@ def get_totp(secret: str) -> Totp:
 @crash_reporter
 @dataclass_to_dict
 def add_login(
-    name: str, username: str = "", password: str = "", notes: str = "", totp: str = "", favorite: bool = False
+    name: str,
+    username: str = "",
+    password: str = "",
+    notes: str = "",
+    totp: str = "",
+    favorite: bool = False,
+    folder_id: str = "",
 ):
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -218,6 +232,7 @@ def add_login(
             notes=notes,
             totp=totp,
             favorite=favorite,
+            folder_id=folder_id,
         )
         if result.success:
             return StandardBitwardenResponse(success=True)
@@ -236,6 +251,7 @@ def add_card(
     exp_year: str = "",
     code: str = "",
     favorite: bool = False,
+    folder_id: str = "",
 ):
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -254,6 +270,7 @@ def add_card(
             exp_year=exp_year,
             code=code,
             favorite=favorite,
+            folder_id=folder_id,
         )
         if result.success:
             return StandardBitwardenResponse(success=True)
@@ -264,7 +281,14 @@ def add_card(
 @crash_reporter
 @dataclass_to_dict
 def edit_login(
-    id: str, name: str, username: str = "", password: str = "", notes: str = "", totp: str = "", favorite: bool = False
+    id: str,
+    name: str,
+    username: str = "",
+    password: str = "",
+    notes: str = "",
+    totp: str = "",
+    favorite: bool = False,
+    folder_id: str = "",
 ):
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -281,6 +305,7 @@ def edit_login(
             notes=notes,
             totp=totp,
             favorite=favorite,
+            folder_id=folder_id,
         )
         if result.success:
             return StandardBitwardenResponse(success=True)
@@ -300,6 +325,7 @@ def edit_card(
     exp_year: str = "",
     code: str = "",
     favorite: bool = False,
+    folder_id: str = "",
 ):
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -318,6 +344,7 @@ def edit_card(
             exp_year=exp_year,
             code=code,
             favorite=favorite,
+            folder_id=folder_id,
         )
         if result.success:
             return StandardBitwardenResponse(success=True)
@@ -439,12 +466,15 @@ def list_trash() -> ListItemsResult:
                         expiry_month=item.expiry_month.zfill(2) if item.expiry_month else "",
                         expiry_year=item.expiry_year.zfill(4) if item.expiry_year else "",
                         code=item.code or "",
+                        folder_id=item.folder_id or "",
+                        folder_name=item.folder_name or "",
                     )
                 )
 
     return ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
 
 
+@crash_reporter
 def trash_item(item_id: str) -> StandardBitwardenResponse:
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -459,6 +489,7 @@ def trash_item(item_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message=result.data)
 
 
+@crash_reporter
 def delete_item(item_id: str) -> StandardBitwardenResponse:
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -473,6 +504,7 @@ def delete_item(item_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message=result.data)
 
 
+@crash_reporter
 def restore_item(item_id: str) -> StandardBitwardenResponse:
     with KV() as kv:
         session_code = kv.get("bw.session_code")
@@ -481,6 +513,144 @@ def restore_item(item_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message="Not logged in")
 
         result = bitwarden_restore_item(session_code, item_id)
+        if result.success:
+            return StandardBitwardenResponse(success=True)
+        else:
+            return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@dataclass
+class Folder:
+    id: str
+    name: str
+
+
+@dataclass
+class ListFolderResult:
+    success: bool
+    folders: List[Folder]
+
+
+@crash_reporter
+@dataclass_to_dict
+def list_folders() -> ListFolderResult:
+    with KV() as kv:
+        session_code = kv.get("bw.session_code")
+
+        if not session_code:
+            return ListFolderResult(success=False, folders=[])
+
+        synced = kv.get("sealed.synced") or False
+        if not synced:
+            sync_result = bitwarden_sync(session_code)
+            if not sync_result.success:
+                return ListFolderResult(success=False, folders=[])
+            kv.put("sealed.synced", True, ttl_seconds=86400)
+
+        items = bitwarden_list_folders(session_code)
+        parsed_folders = []
+        for folder in items:
+            parsed_folders.append(
+                Folder(
+                    id=folder.id,
+                    name=folder.name or "",
+                )
+            )
+
+    return ListFolderResult(success=True, folders=sorted(parsed_folders, key=lambda x: x.name))
+
+
+@crash_reporter
+@dataclass_to_dict
+def add_folder(name: str) -> StandardBitwardenResponse:
+    with KV() as kv:
+        session_code = kv.get("bw.session_code")
+
+        if not session_code:
+            raise Exception("No session code found")
+
+        result = bitwarden_save_folder(
+            session_code=session_code,
+            name=name,
+        )
+        if result.success:
+            return StandardBitwardenResponse(success=True)
+        else:
+            return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@crash_reporter
+@dataclass_to_dict
+def list_folder(folder_id: str) -> ListItemsResult:
+    with KV() as kv:
+        session_code = kv.get("bw.session_code")
+
+        if not session_code:
+            return ListItemsResult(success=False, items=[])
+
+        synced = kv.get("sealed.synced") or False
+        if not synced:
+            sync_result = bitwarden_sync(session_code)
+            if not sync_result.success:
+                return ListItemsResult(success=False, items=[])
+            kv.put("sealed.synced", True, ttl_seconds=86400)
+
+        items = bitwarden_list_items(session_code, folder_id=folder_id)
+        parsed_items = []
+        for item in items:
+            if item.item_type in (BitwardenItemType.LOGIN, BitwardenItemType.CARD):
+                parsed_items.append(
+                    Item(
+                        id=item.id,
+                        name=item.name or "",
+                        username=item.username or "",
+                        password=item.password or "",
+                        favorite=item.favorite or False,
+                        item_type=item.item_type or BitwardenItemType.LOGIN,
+                        notes=item.notes or "",
+                        created=parse_bw_date(item.creation_date),
+                        updated=parse_bw_date(item.revision_date),
+                        totp=item.totp or "",
+                        cardholder_name=item.cardholder_name or "",
+                        brand=item.brand or "",
+                        number=item.number or "",
+                        expiry_month=item.expiry_month.zfill(2) if item.expiry_month else "",
+                        expiry_year=item.expiry_year.zfill(4) if item.expiry_year else "",
+                        code=item.code or "",
+                        folder_id=item.folder_id or "",
+                        folder_name=item.folder_name or "",
+                    )
+                )
+
+    return ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+
+
+@crash_reporter
+@dataclass_to_dict
+def delete_folder(folder_id: str) -> StandardBitwardenResponse:
+    with KV() as kv:
+        session_code = kv.get("bw.session_code")
+
+        if not session_code:
+            return StandardBitwardenResponse(success=False, message="Not logged in")
+
+        result = bitwarden_delete_folder(session_code, folder_id)
+        if result.success:
+            return StandardBitwardenResponse(success=True)
+        else:
+            return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@crash_reporter
+@dataclass_to_dict
+def edit_folder(folder_id: str, name: str) -> StandardBitwardenResponse:
+    with KV() as kv:
+        session_code = kv.get("bw.session_code")
+
+        if not session_code:
+            return StandardBitwardenResponse(success=False, message="Not logged in")
+
+        result = bitwarden_edit_folder(session_code, folder_id, name)
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:

@@ -79,6 +79,62 @@ def bitwarden_unlock(password: str) -> BitwardenClientResponse:
     return BitwardenClientResponse(success=True, data=result.data)
 
 
+@dataclass
+class BitwardenFolder:
+    id: str
+    name: str
+
+
+def bitwarden_list_folders(session_code: str) -> List[BitwardenFolder]:
+    args = ["list", "folders"]
+    result = run_bw(args, env={"BW_SESSION": session_code})
+    folder_list = result.json()
+
+    bitwarden_folders = []
+    for folder in folder_list:
+        folder_id = folder.get("id")
+        if folder_id:
+            folder_name = folder.get("name")
+
+            bitwarden_folders.append(BitwardenFolder(id=folder_id, name=folder_name))
+
+    return bitwarden_folders
+
+
+def bitwarden_save_folder(
+    session_code: str,
+    name: str,
+):
+    item = {"name": name}
+
+    try:
+        run_bw(["create", "folder", b64encode(json.dumps(item).encode()).decode()], env={"BW_SESSION": session_code})
+    except Exception as e:
+        return BitwardenClientResponse(success=False, data=str(e))
+    return BitwardenClientResponse(success=True, data="")
+
+
+def bitwarden_edit_folder(session_code: str, id: str, name: str):
+    item = {"name": name}
+
+    try:
+        run_bw(["edit", "folder", id, b64encode(json.dumps(item).encode()).decode()], env={"BW_SESSION": session_code})
+    except Exception as e:
+        return BitwardenClientResponse(success=False, data=str(e))
+    return BitwardenClientResponse(success=True, data="")
+
+
+def bitwarden_delete_folder(
+    session_code: str,
+    id: str,
+):
+    try:
+        run_bw(["delete", "folder", id], env={"BW_SESSION": session_code})
+    except Exception as e:
+        return BitwardenClientResponse(success=False, data=str(e))
+    return BitwardenClientResponse(success=True, data="")
+
+
 class BitwardenItemType(Enum):
     LOGIN = "login"
     SECURE_NOTE = "secure_note"
@@ -121,14 +177,23 @@ class BitwardenItem:
     expiry_year: str
     code: str
     raw: Dict
+    folder_id: str
+    folder_name: str
 
 
-def bitwarden_list_items(session_code: str, trash: bool = False) -> List[BitwardenItem]:
+def bitwarden_list_items(
+    session_code: str, trash: bool = False, folder_id: Optional[str] = None
+) -> List[BitwardenItem]:
     args = ["list", "items"]
     if trash:
         args.append("--trash")
+    if folder_id:
+        args.extend(["--folderid", folder_id])
+
     result = run_bw(args, env={"BW_SESSION": session_code})
     items_list = result.json()
+
+    folders = bitwarden_list_folders(session_code)
 
     bitwarden_items = []
     for item in items_list:
@@ -147,6 +212,12 @@ def bitwarden_list_items(session_code: str, trash: bool = False) -> List[Bitward
         item_expiry_month = item.get("card", {}).get("expMonth")
         item_expiry_year = item.get("card", {}).get("expYear")
         item_code = item.get("card", {}).get("code")
+        found_folder_id = item.get("folderId", "")
+        folder = [x for x in folders if x.id == found_folder_id]
+        if folder:
+            folder_name = folder[0].name
+        else:
+            folder_name = ""
 
         bitwarden_items.append(
             BitwardenItem(
@@ -167,6 +238,8 @@ def bitwarden_list_items(session_code: str, trash: bool = False) -> List[Bitward
                 expiry_year=item_expiry_year,
                 code=item_code,
                 raw=item,
+                folder_id=found_folder_id,
+                folder_name=folder_name,
             )
         )
 
@@ -192,6 +265,17 @@ def bitwarden_get_item(session_code: str, item_id: str) -> BitwardenItem:
     item_expiry_month = item.get("card", {}).get("expMonth")
     item_expiry_year = item.get("card", {}).get("expYear")
     item_code = item.get("card", {}).get("code")
+    item_folder_id = item.get("folderId", "")
+
+    if item_folder_id:
+        folders = bitwarden_list_folders(session_code)
+        folder = [x for x in folders if x.id == item_folder_id]
+        if folder:
+            folder_name = folder[0].name
+        else:
+            folder_name = ""
+    else:
+        folder_name = ""
 
     return BitwardenItem(
         id=item_id,
@@ -211,6 +295,8 @@ def bitwarden_get_item(session_code: str, item_id: str) -> BitwardenItem:
         expiry_year=item_expiry_year,
         code=item_code,
         raw=item,
+        folder_id=item_folder_id,
+        folder_name=folder_name,
     )
 
 
@@ -229,6 +315,7 @@ def bitwarden_save_item(
     exp_year: Optional[str] = None,
     code: Optional[str] = "",
     favorite: Optional[bool] = False,
+    folder_id: Optional[str] = None,
 ):
     if not username:
         username = None
@@ -238,6 +325,8 @@ def bitwarden_save_item(
         notes = None
     if not totp:
         totp = None
+    if not folder_id:
+        folder_id = None
 
     if type == BitwardenItemType.LOGIN:
         login = {"uris": [], "username": username, "password": password, "totp": totp, "fido2Credentials": []}
@@ -264,7 +353,7 @@ def bitwarden_save_item(
         "deletedDate": None,
         "organizationId": None,
         "collectionIds": None,
-        "folderId": None,
+        "folderId": folder_id,
         "type": type_,
         "name": name,
         "notes": notes,
@@ -300,6 +389,7 @@ def bitwarden_edit_item(
     exp_year: Optional[str] = None,
     code: Optional[str] = "",
     favorite: Optional[bool] = False,
+    folder_id: Optional[str] = "",
 ):
     item = bitwarden_get_item(session_code, id)
     raw_item = item.raw
@@ -329,6 +419,10 @@ def bitwarden_edit_item(
         raw_item["card"]["code"] = code
     if favorite is not None:
         raw_item["favorite"] = favorite
+    if folder_id:
+        raw_item["folderId"] = folder_id
+    else:
+        raw_item["folderId"] = None
 
     try:
         run_bw(
