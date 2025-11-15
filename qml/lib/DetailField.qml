@@ -1,5 +1,5 @@
-import QtQuick 2.7
 import Lomiri.Components 1.3
+import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
 /**
@@ -48,36 +48,27 @@ Item {
 
     // Display title for the field (e.g., "Username", "Password")
     property string title: ""
-
     // Display content when visibility toggle is not used
     property string subtitle: ""
-
     // Whether to show the copy button (default: true)
     property bool showCopyButton: true
-
     // Whether to show the visibility toggle button for sensitive content
     property bool showVisibilityToggle: false
-
     // Current visibility state when using visibility toggle
     property bool isContentVisible: true
-
     // Content to show when visible (used with showVisibilityToggle)
     property string visibleContent: subtitle
-
     // Content to show when hidden (default: bullet points)
     property string hiddenContent: "••••••••••••"
-
     // Array of custom action objects with iconName and action properties
     property var customActions: []
-
     // Whether to show a divider line at the bottom
     property bool showDivider: false
 
     // Emitted when the copy button is clicked
-    signal copyClicked
-
+    signal copyClicked()
     // Emitted when the visibility toggle is clicked
-    signal visibilityToggled
+    signal visibilityToggled()
 
     height: Math.max(units.gu(6), contentColumn.height + units.gu(2))
     anchors.left: parent.left
@@ -87,13 +78,15 @@ Item {
 
     Column {
         id: contentColumn
+
+        spacing: units.gu(0.5)
+
         anchors {
             left: parent.left
             right: actionsRow.visible ? actionsRow.left : parent.right
             rightMargin: actionsRow.visible ? units.gu(1) : 0
             verticalCenter: parent.verticalCenter
         }
-        spacing: units.gu(0.5)
 
         Label {
             text: detailField.title
@@ -108,28 +101,35 @@ Item {
             fontSize: "medium"
             elide: Text.ElideRight
         }
+
     }
 
     Row {
         id: actionsRow
+
+        spacing: units.gu(1)
+        visible: showCopyButton || showVisibilityToggle || customActions.length > 0
+
         anchors {
             right: parent.right
             verticalCenter: parent.verticalCenter
         }
-        spacing: units.gu(1)
-        visible: showCopyButton || showVisibilityToggle || customActions.length > 0
 
         Repeater {
             model: detailField.customActions
+
             delegate: Icon {
                 width: units.gu(2.5)
                 height: units.gu(2.5)
                 name: modelData.iconName
+
                 MouseArea {
                     anchors.fill: parent
                     onClicked: modelData.action()
                 }
+
             }
+
         }
 
         Icon {
@@ -137,6 +137,7 @@ Item {
             height: units.gu(2.5)
             name: detailField.isContentVisible ? "view-off" : "view-on"
             visible: detailField.showVisibilityToggle
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -144,6 +145,7 @@ Item {
                     detailField.visibilityToggled();
                 }
             }
+
         }
 
         Icon {
@@ -151,21 +153,27 @@ Item {
             height: units.gu(2.5)
             name: "edit-copy"
             visible: detailField.showCopyButton
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: detailField.copyClicked()
             }
+
         }
+
     }
 
     Rectangle {
         visible: detailField.showDivider
+        height: units.dp(1)
+        color: theme.palette.normal.base
+
         anchors {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
         }
-        height: units.dp(1)
-        color: theme.palette.normal.base
+
     }
+
 }

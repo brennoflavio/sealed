@@ -1,3 +1,4 @@
+import "." 1.0
 import Lomiri.Components 1.3
 /*
  * Copyright (C) 2025  Brenno Flávio de Almeida
@@ -81,7 +82,7 @@ Page {
     function loadFolders() {
         isLoadingFolders = true;
         foldersLoadToast.showing = true;
-        python.call('main.list_folders', [], function(result) {
+        python.call('main.list_folders', [SessionModel.getEncryptionKey()], function(result) {
             isLoadingFolders = false;
             foldersLoadToast.showing = false;
             if (result.success)

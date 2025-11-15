@@ -1,3 +1,4 @@
+import "." 1.0
 import Lomiri.Components 1.3
 import Lomiri.Components.Popups 1.3
 /*
@@ -34,7 +35,7 @@ Page {
         errorMessage = "";
         loadToast.showing = true;
         loadToast.message = i18n.tr("Loading passwords...");
-        python.call('main.list_folder', [folderId], function(result) {
+        python.call('main.list_folder', [folderId, SessionModel.getEncryptionKey()], function(result) {
             isLoading = false;
             loadToast.showing = false;
             if (result.success) {

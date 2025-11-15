@@ -14,17 +14,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from src.constants import (
-    APP_NAME,
-    CRASH_REPORT_URL,
-)
+from src.constants import APP_NAME, CACHE_TTL_SECONDS, CRASH_REPORT_URL
 from src.ut_components import setup
 from src.utils import parse_bw_date
 
 setup(APP_NAME, CRASH_REPORT_URL)
 import secrets
 import string
-from dataclasses import dataclass
+from base64 import urlsafe_b64encode
+from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import List
 
@@ -48,10 +46,18 @@ from src.bitwarden_client import (
     bitwarden_sync,
     bitwarden_unlock,
 )
+from src.encryption import (
+    generate_key_from_password,
+    memoize_clear,
+    memoize_enabled,
+    memoize_get,
+    memoize_set,
+    set_memoize,
+)
 from src.totp import generate_totp
 from src.ut_components.crash import crash_reporter, get_crash_report, set_crash_report
 from src.ut_components.kv import KV
-from src.ut_components.utils import dataclass_to_dict
+from src.ut_components.utils import dataclass_to_dict, enum_to_str
 
 
 def setup_bw():
@@ -113,7 +119,8 @@ def login(email: str = "", password: str = "", code: str = "") -> StandardBitwar
             return StandardBitwardenResponse(success=False, message=session_code.data)
     with KV() as kv:
         kv.put("bw.session_code", session_code.data)
-    return StandardBitwardenResponse(success=True)
+        key = generate_key_from_password(password)
+    return StandardBitwardenResponse(success=True, message=urlsafe_b64encode(key).decode("utf-8"))
 
 
 @dataclass
@@ -146,8 +153,12 @@ class ListItemsResult:
 
 @crash_reporter
 @dataclass_to_dict
-def list_items() -> ListItemsResult:
+def list_items(key: str = "") -> ListItemsResult:
     with KV() as kv:
+        memoization = memoize_get(key, "list_items")
+        if memoization:
+            return ListItemsResult(**memoization)
+
         session_code = kv.get("bw.session_code")
 
         if not session_code:
@@ -187,7 +198,9 @@ def list_items() -> ListItemsResult:
                     )
                 )
 
-    return ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+        response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+        memoize_set(key, "list_items", enum_to_str(asdict(response)), ttl_seconds=CACHE_TTL_SECONDS)  # type: ignore
+    return response
 
 
 @dataclass
@@ -234,6 +247,7 @@ def add_login(
             favorite=favorite,
             folder_id=folder_id,
         )
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -272,6 +286,7 @@ def add_card(
             favorite=favorite,
             folder_id=folder_id,
         )
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -307,6 +322,7 @@ def edit_login(
             favorite=favorite,
             folder_id=folder_id,
         )
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -346,6 +362,7 @@ def edit_card(
             favorite=favorite,
             folder_id=folder_id,
         )
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -365,6 +382,7 @@ def refresh() -> StandardBitwardenResponse:
         if not sync_result.success:
             return StandardBitwardenResponse(success=False, message="Failed to sync")
         kv.put("sealed.synced", True, ttl_seconds=86400)
+        memoize_clear()
         return StandardBitwardenResponse(success=True)
 
 
@@ -380,6 +398,7 @@ def set_server(url: str) -> StandardBitwardenResponse:
     setup_bw()
 
     response = bitwarden_set_server(url)
+    memoize_clear()
     if not response.success:
         return StandardBitwardenResponse(success=False, message=response.data)
 
@@ -392,6 +411,7 @@ def set_server(url: str) -> StandardBitwardenResponse:
 class Configuration:
     server_url: str
     crash_logs: bool
+    performance_mode: bool
 
 
 @crash_reporter
@@ -400,11 +420,18 @@ def get_configuration() -> Configuration:
     with KV() as kv:
         server_url = kv.get("config.server_url", "bitwarden.com", True) or "bitwarden.com"
         crash_logs = get_crash_report()
-    return Configuration(server_url=server_url, crash_logs=crash_logs)
+        performance_mode = memoize_enabled()
+    return Configuration(server_url=server_url, crash_logs=crash_logs, performance_mode=performance_mode)
 
 
 def set_crash_logs(enabled: bool):
     return set_crash_report(enabled)
+
+
+def set_performance_mode(enabled: bool):
+    if not enabled:
+        memoize_clear()
+    return set_memoize(enabled)
 
 
 @crash_reporter
@@ -415,6 +442,7 @@ def logout() -> StandardBitwardenResponse:
         kv.delete_partial("bw")
 
         response = bitwarden_logout()
+        memoize_clear()
         if not response.success:
             if "not logged in" in response.data.lower():
                 return StandardBitwardenResponse(success=True)
@@ -430,8 +458,12 @@ def generate_password() -> str:
 
 @crash_reporter
 @dataclass_to_dict
-def list_trash() -> ListItemsResult:
+def list_trash(key: str = "") -> ListItemsResult:
     with KV() as kv:
+        memoization = memoize_get(key, "list_trash")
+        if memoization:
+            return ListItemsResult(**memoization)
+
         session_code = kv.get("bw.session_code")
 
         if not session_code:
@@ -471,7 +503,9 @@ def list_trash() -> ListItemsResult:
                     )
                 )
 
-    return ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+        response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+        memoize_set(key, "list_trash", enum_to_str(asdict(response)), ttl_seconds=CACHE_TTL_SECONDS)  # type: ignore
+        return response
 
 
 @crash_reporter
@@ -483,6 +517,7 @@ def trash_item(item_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message="Not logged in")
 
         result = bitwarden_delete_item(session_code, item_id)
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -498,6 +533,7 @@ def delete_item(item_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message="Not logged in")
 
         result = bitwarden_delete_item(session_code, item_id, permanent=True)
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -513,6 +549,7 @@ def restore_item(item_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message="Not logged in")
 
         result = bitwarden_restore_item(session_code, item_id)
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -533,8 +570,12 @@ class ListFolderResult:
 
 @crash_reporter
 @dataclass_to_dict
-def list_folders() -> ListFolderResult:
+def list_folders(key: str = "") -> ListFolderResult:
     with KV() as kv:
+        memoization = memoize_get(key, "list_folders")
+        if memoization:
+            return ListFolderResult(**memoization)
+
         session_code = kv.get("bw.session_code")
 
         if not session_code:
@@ -557,7 +598,9 @@ def list_folders() -> ListFolderResult:
                 )
             )
 
-    return ListFolderResult(success=True, folders=sorted(parsed_folders, key=lambda x: x.name))
+    response = ListFolderResult(success=True, folders=sorted(parsed_folders, key=lambda x: x.name))
+    memoize_set(key, "list_folders", enum_to_str(asdict(response)), ttl_seconds=CACHE_TTL_SECONDS)  # type: ignore
+    return response
 
 
 @crash_reporter
@@ -573,6 +616,7 @@ def add_folder(name: str) -> StandardBitwardenResponse:
             session_code=session_code,
             name=name,
         )
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -581,8 +625,12 @@ def add_folder(name: str) -> StandardBitwardenResponse:
 
 @crash_reporter
 @dataclass_to_dict
-def list_folder(folder_id: str) -> ListItemsResult:
+def list_folder(folder_id: str, key: str = "") -> ListItemsResult:
     with KV() as kv:
+        memoization = memoize_get(key, "list_folder", folder_id=folder_id)
+        if memoization:
+            return ListItemsResult(**memoization)
+
         session_code = kv.get("bw.session_code")
 
         if not session_code:
@@ -622,7 +670,15 @@ def list_folder(folder_id: str) -> ListItemsResult:
                     )
                 )
 
-    return ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+    response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+    memoize_set(
+        key,
+        "list_folder",
+        enum_to_str(asdict(response)),  # type: ignore
+        ttl_seconds=CACHE_TTL_SECONDS,
+        folder_id=folder_id,
+    )
+    return response
 
 
 @crash_reporter
@@ -635,6 +691,7 @@ def delete_folder(folder_id: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message="Not logged in")
 
         result = bitwarden_delete_folder(session_code, folder_id)
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:
@@ -651,6 +708,7 @@ def edit_folder(folder_id: str, name: str) -> StandardBitwardenResponse:
             return StandardBitwardenResponse(success=False, message="Not logged in")
 
         result = bitwarden_edit_folder(session_code, folder_id, name)
+        memoize_clear()
         if result.success:
             return StandardBitwardenResponse(success=True)
         else:

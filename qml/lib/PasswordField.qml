@@ -1,5 +1,5 @@
-import QtQuick 2.7
 import Lomiri.Components 1.3
+import QtQuick 2.7
 import QtQuick.Layouts 1.3
 
 Item {
@@ -17,9 +17,13 @@ Item {
 
     width: parent.width
     height: units.gu(12)
+    onTextChanged: {
+        internal.validate();
+    }
 
     QtObject {
         id: internal
+
         property bool isValid: (required || validationRegex) ? false : true
         property bool showError: false
 
@@ -39,18 +43,15 @@ Item {
             showError = !isValid && text.length > 0;
             return isValid;
         }
-    }
 
-    onTextChanged: {
-        internal.validate();
     }
 
     Connections {
         target: textField
         onFocusChanged: {
-            if (!textField.focus) {
+            if (!textField.focus)
                 internal.validate();
-            }
+
         }
     }
 
@@ -61,6 +62,7 @@ Item {
 
         Label {
             id: titleLabel
+
             text: passwordField.title
             fontSize: "small"
             color: theme.palette.normal.backgroundText
@@ -74,6 +76,7 @@ Item {
 
             TextField {
                 id: textField
+
                 placeholderText: passwordField.placeholder
                 Layout.fillWidth: true
                 echoMode: showPassword ? TextInput.Normal : TextInput.Password
@@ -82,6 +85,7 @@ Item {
 
             Icon {
                 id: visibilityToggle
+
                 name: showPassword ? "view-off" : "view-on"
                 width: units.gu(3)
                 height: units.gu(3)
@@ -93,10 +97,12 @@ Item {
                         showPassword = !showPassword;
                     }
                 }
+
             }
 
             Icon {
                 id: generateButton
+
                 name: "reload"
                 width: units.gu(3)
                 height: units.gu(3)
@@ -108,22 +114,27 @@ Item {
                     onClicked: {
                         if (onGeneratePassword) {
                             var generatedPassword = onGeneratePassword();
-                            if (generatedPassword) {
+                            if (generatedPassword)
                                 textField.text = generatedPassword;
-                            }
+
                         }
                     }
                 }
+
             }
+
         }
 
         Label {
             id: errorLabel
+
             text: required && textField.text.trim().length === 0 ? i18n.tr("This field is required") : errorMessage
             fontSize: "x-small"
             color: theme.palette.normal.negative
             visible: internal.showError
             Layout.fillWidth: true
         }
+
     }
+
 }

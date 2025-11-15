@@ -1,3 +1,4 @@
+import Lomiri.Components 1.3
 /*
  * Copyright (C) 2025  Brenno Flávio de Almeida
  *
@@ -14,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 2.7
-import Lomiri.Components 1.3
 
 /*!
  * \brief IconButton - A circular button component with icon and optional text label
@@ -57,13 +57,14 @@ Item {
     property string iconName: "settings"
     property string text: ""
 
-    signal clicked
+    signal clicked()
 
     width: units.gu(6)
     height: text ? units.gu(7) : units.gu(4)
 
     Rectangle {
         id: background
+
         anchors.centerIn: parent
         width: units.gu(4)
         height: units.gu(4)
@@ -73,21 +74,26 @@ Item {
         states: State {
             name: "pressed"
             when: mouseArea.pressed
+
             PropertyChanges {
                 target: background
                 color: Qt.rgba(0, 0, 0, 0.1)
             }
+
         }
 
         transitions: Transition {
             ColorAnimation {
                 duration: 100
             }
+
         }
+
     }
 
     Icon {
         id: icon
+
         anchors.centerIn: text ? undefined : parent
         anchors.horizontalCenter: text ? parent.horizontalCenter : undefined
         anchors.top: text ? parent.top : undefined
@@ -100,6 +106,7 @@ Item {
 
     Label {
         id: label
+
         visible: text !== ""
         text: iconButton.text
         anchors.horizontalCenter: parent.horizontalCenter
@@ -111,7 +118,9 @@ Item {
 
     MouseArea {
         id: mouseArea
+
         anchors.fill: parent
         onClicked: iconButton.clicked()
     }
+
 }

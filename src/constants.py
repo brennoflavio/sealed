@@ -16,3 +16,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 APP_NAME = "sealed.brennoflavio"
 CRASH_REPORT_URL = "https://ut.brennoflavio.com.br/crash"
+CACHE_TTL_SECONDS = 259200

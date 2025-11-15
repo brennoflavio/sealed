@@ -1,3 +1,4 @@
+import Lomiri.Components 1.3
 /*
  * Copyright (C) 2025  Brenno Flávio de Almeida
  *
@@ -14,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 2.7
-import Lomiri.Components 1.3
 
 /*
  * Toast Component
@@ -43,27 +43,20 @@ Rectangle {
 
     // The text message to display in the toast
     property string message: ""
-
     // Duration in milliseconds to display the toast (excluding fade animations)
     property int duration: 800
-
     // Distance from the bottom of the parent component in grid units
     property real bottomMargin: units.gu(8)
 
     // Shows the toast with the specified text message
     // If no text is provided, shows the current message property
     function show(text) {
-        if (text !== undefined) {
+        if (text !== undefined)
             message = text;
-        }
+
         toastAnimation.restart();
     }
 
-    anchors {
-        bottom: parent.bottom
-        bottomMargin: bottomMargin
-        horizontalCenter: parent.horizontalCenter
-    }
     width: toastLabel.width + units.gu(4)
     height: units.gu(5)
     radius: units.gu(2.5)
@@ -71,8 +64,15 @@ Rectangle {
     opacity: 0
     z: 1000
 
+    anchors {
+        bottom: parent.bottom
+        bottomMargin: bottomMargin
+        horizontalCenter: parent.horizontalCenter
+    }
+
     Label {
         id: toastLabel
+
         anchors.centerIn: parent
         color: "white"
         fontSize: "small"
@@ -81,20 +81,25 @@ Rectangle {
 
     SequentialAnimation {
         id: toastAnimation
+
         PropertyAnimation {
             target: toast
             property: "opacity"
             to: 1
             duration: 200
         }
+
         PauseAnimation {
             duration: toast.duration
         }
+
         PropertyAnimation {
             target: toast
             property: "opacity"
             to: 0
             duration: 200
         }
+
     }
+
 }

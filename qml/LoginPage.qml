@@ -1,3 +1,5 @@
+import "." 1.0
+import Lomiri.Components 1.3
 /*
  * Copyright (C) 2025  Brenno Flávio de Almeida
  *
@@ -14,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import QtQuick 2.7
-import Lomiri.Components 1.3
 import QtQuick.Layouts 1.3
 import io.thp.pyotherside 1.4
 import "ut_components"
@@ -36,28 +37,28 @@ Page {
 
     function checkLoginScreen() {
         isCheckingLogin = true;
-        python.call('main.login_screen', [], function (result) {
+        python.call('main.login_screen', [], function(result) {
             loginScreenData = result;
             visibleFields = result.fields || [];
             isCheckingLogin = false;
-            if (!result.show) {
+            if (!result.show)
                 loginSuccessful();
-            }
+
         });
     }
 
     function performLogin() {
         isLoggingIn = true;
         loginMessage = "";
-
         var emailValue = visibleFields.indexOf("email") !== -1 ? email : "";
         var passwordValue = visibleFields.indexOf("password") !== -1 ? password : "";
         var totpValue = visibleFields.indexOf("totp") !== -1 ? totp : "";
-        python.call('main.login', [emailValue, passwordValue, totpValue], function (result) {
+        python.call('main.login', [emailValue, passwordValue, totpValue], function(result) {
             isLoggingIn = false;
             if (result && result.success) {
                 loginSuccess = true;
                 loginMessage = "";
+                SessionModel.setEncryptionKey(result.message);
                 loginSuccessful();
             } else {
                 loginSuccess = false;
@@ -70,28 +71,21 @@ Page {
         checkLoginScreen();
     }
 
-    header: AppHeader {
-        id: loginHeader
-        pageTitle: i18n.tr('Sealed')
-        isRootPage: true
-        appIconName: "lock"
-        showSettingsButton: true
-        onSettingsClicked: {
-            pageStack.push(Qt.resolvedUrl("ConfigurationPage.qml"));
-        }
-    }
-
     Flickable {
+        contentHeight: loginContent.height + units.gu(4)
+
         anchors {
             top: loginHeader.bottom
             left: parent.left
             right: parent.right
             bottom: parent.bottom
         }
-        contentHeight: loginContent.height + units.gu(4)
 
         Column {
             id: loginContent
+
+            spacing: units.gu(2)
+
             anchors {
                 top: parent.top
                 left: parent.left
@@ -99,7 +93,6 @@ Page {
                 margins: units.gu(2)
                 topMargin: units.gu(4)
             }
-            spacing: units.gu(2)
 
             Label {
                 text: i18n.tr("Bitwarden Login")
@@ -110,69 +103,83 @@ Page {
 
             Form {
                 id: loginForm
+
                 buttonText: i18n.tr("Login")
                 buttonIconName: "lock-broken"
                 enabled: !loginPage.isLoggingIn
+                onSubmitted: {
+                    loginPage.performLogin();
+                }
 
                 InputField {
                     id: emailField
+
+                    property bool isValid: loginPage.visibleFields.indexOf("email") === -1 || text.trim() !== ""
+
                     visible: loginPage.visibleFields.indexOf("email") !== -1
                     title: i18n.tr("Email")
                     placeholder: i18n.tr("Enter your email")
                     text: loginPage.email
                     onTextChanged: loginPage.email = text
-                    property bool isValid: loginPage.visibleFields.indexOf("email") === -1 || text.trim() !== ""
                 }
 
                 InputField {
                     id: passwordField
+
+                    property bool isValid: loginPage.visibleFields.indexOf("password") === -1 || text.trim() !== ""
+
                     visible: loginPage.visibleFields.indexOf("password") !== -1
                     title: i18n.tr("Password")
                     placeholder: i18n.tr("Enter your password")
                     text: loginPage.password
                     echoMode: TextInput.Password
                     onTextChanged: loginPage.password = text
-                    property bool isValid: loginPage.visibleFields.indexOf("password") === -1 || text.trim() !== ""
                 }
 
                 InputField {
                     id: totpField
+
+                    property bool isValid: true
+
                     visible: loginPage.visibleFields.indexOf("totp") !== -1
                     title: i18n.tr("Two-Factor Code - Only Authenticator app is supported")
                     placeholder: i18n.tr("Enter your 2fa code")
                     text: loginPage.totp
                     onTextChanged: loginPage.totp = text
-                    property bool isValid: true
                 }
 
-                onSubmitted: {
-                    loginPage.performLogin();
-                }
             }
 
             Label {
                 id: loginMessageLabel
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                }
+
                 text: loginPage.loginMessage
                 color: loginPage.loginSuccess ? theme.palette.normal.positive : theme.palette.normal.negative
                 wrapMode: Text.WordWrap
                 horizontalAlignment: Text.AlignHCenter
                 visible: loginPage.loginMessage !== ""
+
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
             }
+
         }
+
     }
 
     LoadToast {
         id: loginLoadingToast
+
         showing: loginPage.isLoggingIn
         message: i18n.tr("Logging in... This may take a few moments")
     }
 
     LoadToast {
         id: checkingLoginToast
+
         showing: loginPage.isCheckingLogin
         message: i18n.tr("Checking login status...")
     }
@@ -182,10 +189,23 @@ Page {
 
         Component.onCompleted: {
             addImportPath(Qt.resolvedUrl('../src/'));
-            importModule('main', function () {});
+            importModule('main', function() {
+            });
         }
-
         onError: {
         }
     }
+
+    header: AppHeader {
+        id: loginHeader
+
+        pageTitle: i18n.tr('Sealed')
+        isRootPage: true
+        appIconName: "lock"
+        showSettingsButton: true
+        onSettingsClicked: {
+            pageStack.push(Qt.resolvedUrl("ConfigurationPage.qml"));
+        }
+    }
+
 }
