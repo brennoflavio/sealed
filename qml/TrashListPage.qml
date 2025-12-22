@@ -25,25 +25,18 @@ Page {
     id: trashListPage
 
     property var passwords: []
-    property bool isLoading: false
-    property string errorMessage: ""
+    property bool hasLoaded: false
 
     signal passwordSelected(string passwordId, string passwordName)
     signal backRequested()
 
     function loadPasswords() {
-        isLoading = true;
-        errorMessage = "";
-        loadToast.showing = true;
-        loadToast.message = i18n.tr("Loading deleted items...");
         python.call('main.list_trash', [SessionModel.getEncryptionKey()], function(result) {
-            isLoading = false;
-            loadToast.showing = false;
             if (result.success) {
                 passwords = result.items;
+                hasLoaded = true;
             } else {
-                errorMessage = i18n.tr("Failed to load deleted items");
-                passwords = [];
+                toast.show(i18n.tr("Failed to load deleted items"));
             }
         });
     }
@@ -99,7 +92,7 @@ Page {
         showSearchBar: true
         searchPlaceholder: i18n.tr("Search deleted items...")
         searchFields: ["title", "subtitle"]
-        emptyMessage: errorMessage !== "" ? errorMessage : i18n.tr("No items in trash")
+        emptyMessage: hasLoaded ? i18n.tr("No items in trash") : i18n.tr("Loading deleted items...")
         itemActions: [{
             "id": "copy-username",
             "iconName": "contact"
@@ -156,7 +149,7 @@ Page {
         }
 
         anchors {
-            top: trashHeader.bottom
+            top: loadingBar.bottom
             topMargin: units.gu(2)
             left: parent.left
             right: parent.right
@@ -178,18 +171,12 @@ Page {
             iconName: "reload"
             text: i18n.tr("Refresh")
             onClicked: {
-                loadToast.showing = true;
-                loadToast.message = i18n.tr("Refreshing...");
-                python.call('main.refresh', [], function() {
-                    trashListPage.loadPasswords();
+                toast.show(i18n.tr("Refreshing deleted items..."));
+                python.call('main.refresh_trash', [SessionModel.getEncryptionKey()], function() {
                 });
             }
         }
 
-    }
-
-    LoadToast {
-        id: loadToast
     }
 
     Python {
@@ -199,16 +186,31 @@ Page {
             addImportPath(Qt.resolvedUrl('../src/'));
             importModule('main', function() {
             });
+            setHandler('sync-trash-items', function(result) {
+                if (result.success) {
+                    passwords = result.items;
+                    hasLoaded = true;
+                    toast.show(i18n.tr("Trash synced"));
+                } else {
+                    toast.show(i18n.tr("Failed to load deleted items"));
+                }
+            });
         }
         onError: {
-            errorMessage = i18n.tr("An error occurred");
-            isLoading = false;
-            loadToast.showing = false;
+            toast.show(i18n.tr("An error occurred"));
         }
     }
 
     Toast {
         id: toast
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: trashHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

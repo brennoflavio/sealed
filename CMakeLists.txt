@@ -64,6 +64,11 @@ install(DIRECTORY src DESTINATION ${DATA_DIR})
 
 install(DIRECTORY qml DESTINATION ${DATA_DIR})
 
+# Python Deps
+install(FILES "build-python-deps.sh" DESTINATION ${DATA_DIR})
+install(FILES "uv.lock" DESTINATION ${DATA_DIR})
+install(FILES "pyproject.toml" DESTINATION ${DATA_DIR})
+
 # Bitwarden CLI
 install(FILES lib/bw PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ DESTINATION ${DATA_DIR})
 

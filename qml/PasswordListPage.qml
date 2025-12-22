@@ -25,25 +25,18 @@ Page {
     id: passwordListPage
 
     property var passwords: []
-    property bool isLoading: false
-    property string errorMessage: ""
+    property bool hasLoaded: false
 
     signal passwordSelected(string passwordId, string passwordName)
     signal backRequested()
 
     function loadPasswords() {
-        isLoading = true;
-        errorMessage = "";
-        loadToast.showing = true;
-        loadToast.message = i18n.tr("Loading passwords...");
         python.call('main.list_items', [SessionModel.getEncryptionKey()], function(result) {
-            isLoading = false;
-            loadToast.showing = false;
             if (result.success) {
                 passwords = result.items;
+                hasLoaded = true;
             } else {
-                errorMessage = i18n.tr("Failed to load passwords");
-                passwords = [];
+                toast.show(i18n.tr("Failed to load passwords"));
             }
         });
     }
@@ -101,7 +94,7 @@ Page {
         showSearchBar: true
         searchPlaceholder: i18n.tr("Search passwords...")
         searchFields: ["title", "subtitle"]
-        emptyMessage: errorMessage !== "" ? errorMessage : i18n.tr("No passwords stored")
+        emptyMessage: hasLoaded ? i18n.tr("No passwords") : i18n.tr("Loading your passwords...")
         itemActions: [{
             "id": "copy-username",
             "iconName": "contact"
@@ -160,7 +153,7 @@ Page {
         }
 
         anchors {
-            top: passwordHeader.bottom
+            top: loadingBar.bottom
             topMargin: units.gu(2)
             left: parent.left
             right: parent.right
@@ -182,10 +175,8 @@ Page {
             iconName: "reload"
             text: i18n.tr("Refresh")
             onClicked: {
-                loadToast.showing = true;
-                loadToast.message = i18n.tr("Refreshing...");
-                python.call('main.refresh', [], function() {
-                    passwordListPage.loadPasswords();
+                toast.show(i18n.tr("Refreshing passwords..."));
+                python.call('main.refresh', [SessionModel.getEncryptionKey()], function() {
                 });
             }
         }
@@ -263,10 +254,6 @@ Page {
 
     }
 
-    LoadToast {
-        id: loadToast
-    }
-
     Python {
         id: python
 
@@ -274,17 +261,32 @@ Page {
             addImportPath(Qt.resolvedUrl('../src/'));
             importModule('main', function() {
             });
+            setHandler('sync-items', function(result) {
+                if (result.success) {
+                    passwords = result.items;
+                    hasLoaded = true;
+                    toast.show(i18n.tr("Passwords synced"));
+                } else {
+                    toast.show(i18n.tr("Failed to load passwords"));
+                }
+            });
         }
         onError: {
             console.log('Python error: ' + traceback);
-            errorMessage = i18n.tr("An error occurred");
-            isLoading = false;
-            loadToast.showing = false;
+            toast.show(i18n.tr("An error occurred"));
         }
     }
 
     Toast {
         id: toast
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: passwordHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

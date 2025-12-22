@@ -18,7 +18,7 @@ import json
 import traceback
 from base64 import b64encode
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 from typing import Dict, List, Optional
 
 from src.utils import run_bw
@@ -30,7 +30,7 @@ class BitwardenClientResponse:
     data: str
 
 
-class BitwardenStatus(Enum):
+class BitwardenStatus(StrEnum):
     UNAUTHENTICATED = "unauthenticated"
     LOCKED = "locked"
     UNLOCKED = "unlocked"
@@ -135,7 +135,7 @@ def bitwarden_delete_folder(
     return BitwardenClientResponse(success=True, data="")
 
 
-class BitwardenItemType(Enum):
+class BitwardenItemType(StrEnum):
     LOGIN = "login"
     SECURE_NOTE = "secure_note"
     CARD = "card"

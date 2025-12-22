@@ -18,6 +18,7 @@ import Lomiri.Components 1.3
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import io.thp.pyotherside 1.4
+import "lib"
 import "ut_components"
 
 Page {
@@ -33,7 +34,9 @@ Page {
     property var visibleFields: []
     property bool isCheckingLogin: false
 
-    signal loginSuccessful()
+    function navigateToPasswordList() {
+        pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
+    }
 
     function checkLoginScreen() {
         isCheckingLogin = true;
@@ -42,7 +45,7 @@ Page {
             visibleFields = result.fields || [];
             isCheckingLogin = false;
             if (!result.show)
-                loginSuccessful();
+                navigateToPasswordList();
 
         });
     }
@@ -59,7 +62,7 @@ Page {
                 loginSuccess = true;
                 loginMessage = "";
                 SessionModel.setEncryptionKey(result.message);
-                loginSuccessful();
+                navigateToPasswordList();
             } else {
                 loginSuccess = false;
                 loginMessage = result && result.message ? result.message : i18n.tr("Login failed");
@@ -75,7 +78,7 @@ Page {
         contentHeight: loginContent.height + units.gu(4)
 
         anchors {
-            top: loginHeader.bottom
+            top: loadingBar.bottom
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -194,6 +197,14 @@ Page {
         }
         onError: {
         }
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: loginHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

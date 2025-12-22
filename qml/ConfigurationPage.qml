@@ -16,6 +16,7 @@ import Lomiri.Components 1.3
  */
 import QtQuick 2.7
 import io.thp.pyotherside 1.4
+import "lib"
 import "ut_components"
 
 Page {
@@ -23,7 +24,6 @@ Page {
 
     property bool crashReportEnabled: false
     property string serverUrl: ""
-    property bool performanceMode: false
 
     function loadConfiguration() {
         python.call('main.get_configuration', [], function(config) {
@@ -35,9 +35,6 @@ Page {
                     configurationPage.serverUrl = config.server_url;
                     serverUrlField.text = config.server_url;
                 }
-                if (config.hasOwnProperty('performance_mode'))
-                    configurationPage.performanceMode = config.performance_mode;
-
             }
         });
     }
@@ -48,9 +45,12 @@ Page {
         loadToast.showing = true;
         python.call('main.set_server', [serverUrlField.text], function(response) {
             loadToast.showing = false;
-            if (!response.success)
+            if (response.success) {
+                pageStack.clear();
+                pageStack.push(Qt.resolvedUrl("LoginPage.qml"));
+            } else {
                 serverErrorLabel.text = response.message;
-
+            }
         });
     }
 
@@ -77,7 +77,7 @@ Page {
         contentHeight: contentColumn.height
 
         anchors {
-            top: header.bottom
+            top: loadingBar.bottom
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -157,24 +157,6 @@ Page {
 
             ConfigurationGroup {
                 width: parent.width
-                title: i18n.tr("Performance")
-
-                ToggleOption {
-                    width: parent.width
-                    title: i18n.tr("Performance Mode")
-                    subtitle: i18n.tr("Encrypted password cache for better performance")
-                    checked: configurationPage.performanceMode
-                    onToggled: function(checked) {
-                        configurationPage.performanceMode = checked;
-                        python.call('main.set_performance_mode', [checked], function() {
-                        });
-                    }
-                }
-
-            }
-
-            ConfigurationGroup {
-                width: parent.width
                 title: i18n.tr("Privacy")
 
                 ToggleOption {
@@ -211,7 +193,17 @@ Page {
         id: loadToast
     }
 
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: configHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+    }
+
     header: AppHeader {
+        id: configHeader
+
         pageTitle: i18n.tr("Configuration")
         isRootPage: false
         showSettingsButton: false

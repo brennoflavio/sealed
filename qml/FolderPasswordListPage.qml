@@ -27,22 +27,15 @@ Page {
     property string folderId: ""
     property string folderName: ""
     property var passwords: []
-    property bool isLoading: false
-    property string errorMessage: ""
+    property bool hasLoaded: false
 
     function loadPasswords() {
-        isLoading = true;
-        errorMessage = "";
-        loadToast.showing = true;
-        loadToast.message = i18n.tr("Loading passwords...");
-        python.call('main.list_folder', [folderId, SessionModel.getEncryptionKey()], function(result) {
-            isLoading = false;
-            loadToast.showing = false;
+        python.call('main.list_folder', [SessionModel.getEncryptionKey(), folderId], function(result) {
             if (result.success) {
                 passwords = result.items;
+                hasLoaded = true;
             } else {
-                errorMessage = i18n.tr("Failed to load passwords");
-                passwords = [];
+                toast.show(i18n.tr("Failed to load passwords"));
             }
         });
     }
@@ -100,7 +93,7 @@ Page {
         showSearchBar: true
         searchPlaceholder: i18n.tr("Search passwords...")
         searchFields: ["title", "subtitle"]
-        emptyMessage: errorMessage !== "" ? errorMessage : i18n.tr("No passwords in this folder")
+        emptyMessage: hasLoaded ? i18n.tr("No passwords in this folder") : i18n.tr("Loading passwords...")
         itemActions: [{
             "id": "copy-username",
             "iconName": "contact"
@@ -159,7 +152,7 @@ Page {
         }
 
         anchors {
-            top: passwordHeader.bottom
+            top: loadingBar.bottom
             topMargin: units.gu(2)
             left: parent.left
             right: parent.right
@@ -181,7 +174,9 @@ Page {
             iconName: "reload"
             text: i18n.tr("Refresh")
             onClicked: {
-                loadPasswords();
+                toast.show(i18n.tr("Refreshing passwords..."));
+                python.call('main.refresh_folder', [SessionModel.getEncryptionKey(), folderId], function() {
+                });
             }
         }
 
@@ -242,10 +237,6 @@ Page {
 
     }
 
-    LoadToast {
-        id: loadToast
-    }
-
     Python {
         id: python
 
@@ -253,16 +244,31 @@ Page {
             addImportPath(Qt.resolvedUrl('../src/'));
             importModule('main', function() {
             });
+            setHandler('sync-folder-items', function(result) {
+                if (result.success) {
+                    passwords = result.items;
+                    hasLoaded = true;
+                    toast.show(i18n.tr("Passwords synced"));
+                } else {
+                    toast.show(i18n.tr("Failed to load passwords"));
+                }
+            });
         }
         onError: {
-            errorMessage = i18n.tr("An error occurred");
-            isLoading = false;
-            loadToast.showing = false;
+            toast.show(i18n.tr("An error occurred"));
         }
     }
 
     Toast {
         id: toast
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: passwordHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

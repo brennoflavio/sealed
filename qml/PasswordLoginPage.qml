@@ -49,7 +49,7 @@ Page {
         clip: true
 
         anchors {
-            top: detailHeader.bottom
+            top: loadingBar.bottom
             left: parent.left
             right: parent.right
             bottom: bottomBar.top
@@ -183,7 +183,7 @@ Page {
             text: i18n.tr("Trash")
             onClicked: {
                 trashLoadToast.showing = true;
-                python.call('main.trash_item', [passwordLoginPage.loginId], function(result) {
+                python.call('main.trash_item', [SessionModel.getEncryptionKey(), passwordLoginPage.loginId], function(result) {
                     trashLoadToast.showing = false;
                     pageStack.clear();
                     pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
@@ -197,7 +197,7 @@ Page {
             text: i18n.tr("Restore")
             onClicked: {
                 loadToast.showing = true;
-                python.call('main.restore_item', [passwordLoginPage.loginId], function(result) {
+                python.call('main.restore_item', [SessionModel.getEncryptionKey(), passwordLoginPage.loginId], function(result) {
                     loadToast.showing = false;
                     pageStack.pop();
                     pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
@@ -211,7 +211,7 @@ Page {
             text: i18n.tr("Delete")
             onClicked: {
                 deleteLoadToast.showing = true;
-                python.call('main.delete_item', [passwordLoginPage.loginId], function(result) {
+                python.call('main.delete_item', [SessionModel.getEncryptionKey(), passwordLoginPage.loginId], function(result) {
                     deleteLoadToast.showing = false;
                     pageStack.pop();
                     pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
@@ -253,6 +253,14 @@ Page {
         id: trashLoadToast
 
         message: i18n.tr("Moving to trash...")
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: detailHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

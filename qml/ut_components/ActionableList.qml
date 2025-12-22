@@ -197,7 +197,7 @@ Column {
             property string leadingIcon: modelData.icon || ""
             property var actions: modelData.customActions && modelData.customActions.length > 0 ? modelData.customActions : actionableList.itemActions
 
-            width: ListView.view.width
+            width: parent ? parent.width : 0
             height: units.gu(7)
 
             Rectangle {

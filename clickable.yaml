@@ -1,3 +1,10 @@
 clickable_minimum_required: 8.0.0
 builder: cmake
 kill: qmlscene
+env_vars:
+  UV_INSTALL_DIR: /usr/local
+image_setup:
+  run:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+postbuild:
+  - /usr/bin/bash install/build-python-deps.sh

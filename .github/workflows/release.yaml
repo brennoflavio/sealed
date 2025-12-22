@@ -24,7 +24,7 @@ jobs:
 
       - name: Build
         run: |
-          docker run --volume ./:/app clickable/ci-ut24.04-1.x-arm64:latest bash -c "cd /app && clickable build --arch arm64"
+          docker run --env UV_INSTALL_DIR=/usr/local --volume ./:/app clickable/ci-ut24.04-1.x-arm64:latest bash -c "cd /app && clickable build --arch arm64"
 
       - name: Deploy
         run: |

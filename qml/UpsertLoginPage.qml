@@ -55,7 +55,7 @@ Page {
         var favorite = favoriteToggle.checked;
         var folderId = selectedFolderId || "";
         if (isEditMode) {
-            python.call('main.edit_login', [loginId, name, username, password, notes, totp, favorite, folderId], function(result) {
+            python.call('main.edit_login', [SessionModel.getEncryptionKey(), loginId, name, username, password, notes, totp, favorite, folderId], function(result) {
                 isSaving = false;
                 loadToast.showing = false;
                 if (result.success) {
@@ -66,7 +66,7 @@ Page {
                 }
             });
         } else {
-            python.call('main.add_login', [name, username, password, notes, totp, favorite, folderId], function(result) {
+            python.call('main.add_login', [SessionModel.getEncryptionKey(), name, username, password, notes, totp, favorite, folderId], function(result) {
                 isSaving = false;
                 loadToast.showing = false;
                 if (result.success) {
@@ -112,7 +112,7 @@ Page {
         clip: true
 
         anchors {
-            top: header.bottom
+            top: loadingBar.bottom
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -320,6 +320,14 @@ Page {
 
         message: i18n.tr("Loading folders...")
         showing: false
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: header.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

@@ -18,6 +18,7 @@ import Lomiri.Components 1.3
 import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import io.thp.pyotherside 1.4
+import "lib"
 import "ut_components"
 
 Page {
@@ -59,7 +60,7 @@ Page {
         var isFavorite = favoriteToggle.checked;
         var folderId = selectedFolderId || "";
         if (isEditMode) {
-            python.call('main.edit_card', [cardId, name, cardholderName, brand, number, expMonth, expYear, code, isFavorite, folderId], function(result) {
+            python.call('main.edit_card', [SessionModel.getEncryptionKey(), cardId, name, cardholderName, brand, number, expMonth, expYear, code, isFavorite, folderId], function(result) {
                 isSaving = false;
                 loadToast.showing = false;
                 if (result.success) {
@@ -70,7 +71,7 @@ Page {
                 }
             });
         } else {
-            python.call('main.add_card', [name, cardholderName, brand, number, expMonth, expYear, code, isFavorite, folderId], function(result) {
+            python.call('main.add_card', [SessionModel.getEncryptionKey(), name, cardholderName, brand, number, expMonth, expYear, code, isFavorite, folderId], function(result) {
                 isSaving = false;
                 loadToast.showing = false;
                 if (result.success) {
@@ -116,7 +117,7 @@ Page {
         clip: true
 
         anchors {
-            top: header.bottom
+            top: loadingBar.bottom
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -363,6 +364,14 @@ Page {
 
         message: i18n.tr("Loading folders...")
         showing: false
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: header.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {

@@ -24,27 +24,18 @@ import "ut_components"
 MainView {
     id: root
 
-    function navigateToPasswordList() {
-        pageStack.push(Qt.resolvedUrl("PasswordListPage.qml"));
-    }
-
     objectName: 'mainView'
     applicationName: 'sealed.brennoflavio'
     automaticOrientation: true
     width: units.gu(45)
     height: units.gu(75)
-    Component.onDestruction: {
-        python.call('main.cleanup', [], function() {
-        });
-    }
 
     PageStack {
         id: pageStack
 
         anchors.fill: parent
         Component.onCompleted: {
-            var loginPage = push(Qt.resolvedUrl("LoginPage.qml"));
-            loginPage.loginSuccessful.connect(root.navigateToPasswordList);
+            push(Qt.resolvedUrl("LoginPage.qml"));
         }
     }
 
@@ -54,6 +45,10 @@ MainView {
         Component.onCompleted: {
             addImportPath(Qt.resolvedUrl('../src/'));
             importModule('main', function() {
+                python.call('main.clear_loading_state', [], function() {
+                });
+                python.call('main.start_event_loop', [], function() {
+                });
             });
         }
         onError: {

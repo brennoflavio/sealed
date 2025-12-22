@@ -14,17 +14,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from src.constants import APP_NAME, CACHE_TTL_SECONDS, CRASH_REPORT_URL
+from src.constants import APP_NAME, CRASH_REPORT_URL
 from src.ut_components import setup
 from src.utils import parse_bw_date
 
 setup(APP_NAME, CRASH_REPORT_URL)
 import secrets
 import string
-from base64 import urlsafe_b64encode
 from dataclasses import asdict, dataclass
-from enum import Enum
-from typing import List
+from enum import StrEnum
+from functools import wraps
+from typing import Any, Callable, Dict, List, Optional
+
+import pyotherside
+from cryptography.fernet import InvalidToken
+from dacite import Config, from_dict
 
 from src.bitwarden_client import (
     BitwardenItemType,
@@ -48,16 +52,46 @@ from src.bitwarden_client import (
 )
 from src.encryption import (
     generate_key_from_password,
-    memoize_clear,
-    memoize_enabled,
-    memoize_get,
-    memoize_set,
-    set_memoize,
+    get_encrypted,
+    save_encrypted,
 )
 from src.totp import generate_totp
 from src.ut_components.crash import crash_reporter, get_crash_report, set_crash_report
+from src.ut_components.event import Event, get_event_dispatcher
 from src.ut_components.kv import KV
-from src.ut_components.utils import dataclass_to_dict, enum_to_str
+from src.ut_components.utils import dataclass_to_dict
+
+DACITE_CONFIG = Config(strict=True, cast=[BitwardenItemType])
+
+
+def clear_loading_state() -> None:
+    with KV() as kv:
+        kv.delete("loading")
+
+
+def loading_initial_state() -> bool:
+    with KV() as kv:
+        loading = kv.get("loading", False) or False
+        return loading
+
+
+def emit_loading(func: Callable) -> Callable:
+    @wraps(func)
+    def wrapper(*args, **kwargs) -> Any:
+        with KV() as kv:
+            kv.put("loading", True)
+        pyotherside.send("loading", True)
+        response = func(*args, **kwargs)
+        with KV() as kv:
+            kv.put("loading", False)
+        pyotherside.send("loading", False)
+        return response
+
+    return wrapper
+
+
+def start_event_loop():
+    get_event_dispatcher().start()
 
 
 def setup_bw():
@@ -70,13 +104,31 @@ def setup_bw():
             kv.put("sealed.setup_done", True)
 
 
+def set_session_key(encryption_key: str, session_key: str) -> None:
+    save_encrypted(encryption_key, "bw.session_key", {"session_key": session_key})
+
+
+def get_session_key(encryption_key: str) -> Optional[str]:
+    result = get_encrypted(encryption_key, "bw.session_key")
+    if result:
+        return result.get("session_key")
+
+
+def exist_session_key() -> bool:
+    with KV() as kv:
+        encrypted_key = kv.get("bw.session_key")
+        if encrypted_key:
+            return True
+    return False
+
+
 @dataclass
 class StandardBitwardenResponse:
     success: bool
     message: str = ""
 
 
-class LoginScreenFields(Enum):
+class LoginScreenFields(StrEnum):
     EMAIL = "email"
     PASSWORD = "password"
     TOTP = "totp"
@@ -92,6 +144,9 @@ class LoginScreen:
 @dataclass_to_dict
 def login_screen() -> LoginScreen:
     setup_bw()
+
+    if exist_session_key():
+        return LoginScreen(show=True, fields=[LoginScreenFields.PASSWORD])
 
     status = bitwarden_status()
     if status == BitwardenStatus.UNAUTHENTICATED:
@@ -110,17 +165,32 @@ def login_screen() -> LoginScreen:
 @dataclass_to_dict
 def login(email: str = "", password: str = "", code: str = "") -> StandardBitwardenResponse:
     if email:
-        session_code = bitwarden_login(email, password, code)
-        if not session_code.success:
-            return StandardBitwardenResponse(success=False, message=session_code.data)
-    else:
-        session_code = bitwarden_unlock(password)
-        if not session_code.success:
-            return StandardBitwardenResponse(success=False, message=session_code.data)
-    with KV() as kv:
-        kv.put("bw.session_code", session_code.data)
-        key = generate_key_from_password(password)
-    return StandardBitwardenResponse(success=True, message=urlsafe_b64encode(key).decode("utf-8"))
+        session_key_response = bitwarden_login(email, password, code)
+        if not session_key_response.success:
+            return StandardBitwardenResponse(
+                success=False, message=f"Error during bitwarden login: {session_key_response.data}"
+            )
+        else:
+            encryption_key = generate_key_from_password(password)
+            set_session_key(encryption_key, session_key_response.data)
+            return StandardBitwardenResponse(success=True, message=encryption_key)
+    elif password:
+        try:
+            encryption_key = generate_key_from_password(password)
+            session_key = get_session_key(encryption_key)
+        except InvalidToken:
+            return StandardBitwardenResponse(success=False, message="Invalid Password")
+        if session_key:
+            return StandardBitwardenResponse(success=True, message=encryption_key)
+        else:
+            session_key_response = bitwarden_unlock(password)
+            if not session_key_response.success:
+                return StandardBitwardenResponse(
+                    success=False, message=f"Error during bitwarden unlock: {session_key_response.data}"
+                )
+            set_session_key(encryption_key, session_key_response.data)
+            return StandardBitwardenResponse(success=True, message=encryption_key)
+    return StandardBitwardenResponse(success=False, message="Unknown error happened")
 
 
 @dataclass
@@ -151,27 +221,31 @@ class ListItemsResult:
     items: List[Item]
 
 
-@crash_reporter
-@dataclass_to_dict
-def list_items(key: str = "") -> ListItemsResult:
-    with KV() as kv:
-        memoization = memoize_get(key, "list_items")
-        if memoization:
-            return ListItemsResult(**memoization)
+class BWKeys(StrEnum):
+    LIST_ITEMS = "bw.list_items"
+    CURRENT_TOTP_SECRET = "bw.current_totp_secret"
+    LIST_TRASH_ITEMS = "bw.list_trash_items"
+    LIST_FOLDERS = "bw.list_folders"
+    LIST_FOLDER_ITEMS = "bw.list_folder_items"
 
-        session_code = kv.get("bw.session_code")
 
-        if not session_code:
+class SyncItems(Event):
+    @emit_loading
+    def trigger(self, metadata: Dict) -> object:
+        encryption_key = metadata.get("encryption_key")
+        if not encryption_key:
             return ListItemsResult(success=False, items=[])
 
-        synced = kv.get("sealed.synced") or False
-        if not synced:
-            sync_result = bitwarden_sync(session_code)
-            if not sync_result.success:
-                return ListItemsResult(success=False, items=[])
-            kv.put("sealed.synced", True, ttl_seconds=86400)
+        session_key = get_session_key(encryption_key)
+        if not session_key:
+            return ListItemsResult(success=False, items=[])
 
-        items = bitwarden_list_items(session_code)
+        sync_result = bitwarden_sync(session_key)
+        if not sync_result.success:
+            return ListItemsResult(success=False, items=[])
+
+        items = bitwarden_list_items(session_key)
+
         parsed_items = []
         for item in items:
             if item.item_type in (BitwardenItemType.LOGIN, BitwardenItemType.CARD):
@@ -199,8 +273,72 @@ def list_items(key: str = "") -> ListItemsResult:
                 )
 
         response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
-        memoize_set(key, "list_items", enum_to_str(asdict(response)), ttl_seconds=CACHE_TTL_SECONDS)  # type: ignore
-    return response
+        save_encrypted(encryption_key, BWKeys.LIST_ITEMS, asdict(response))
+        return response
+
+
+get_event_dispatcher().register_event(SyncItems(id="sync-items"))
+
+# TODO: implement totp
+
+
+@dataclass
+class Folder:
+    id: str
+    name: str
+
+
+@dataclass
+class ListFolderResult:
+    success: bool
+    folders: List[Folder]
+
+
+class SyncFoldersEvent(Event):
+    @emit_loading
+    def trigger(self, metadata: Dict) -> object:
+        encryption_key = metadata.get("encryption_key")
+        if not encryption_key:
+            return ListFolderResult(success=False, folders=[])
+
+        session_key = get_session_key(encryption_key)
+        if not session_key:
+            return ListFolderResult(success=False, folders=[])
+
+        sync_result = bitwarden_sync(session_key)
+        if not sync_result.success:
+            return ListFolderResult(success=False, folders=[])
+
+        items = bitwarden_list_folders(session_key)
+        parsed_folders = []
+        for folder in items:
+            parsed_folders.append(
+                Folder(
+                    id=folder.id,
+                    name=folder.name or "",
+                )
+            )
+
+        response = ListFolderResult(success=True, folders=sorted(parsed_folders, key=lambda x: x.name))
+        save_encrypted(encryption_key, BWKeys.LIST_FOLDERS, asdict(response))
+        return response
+
+
+get_event_dispatcher().register_event(SyncFoldersEvent(id="sync-folders"))
+
+
+@crash_reporter
+@dataclass_to_dict
+def list_items(encryption_key: str) -> ListItemsResult:
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    get_event_dispatcher().schedule(event_id="sync-folders", metadata={"encryption_key": encryption_key})
+
+    items = get_encrypted(encryption_key, BWKeys.LIST_ITEMS)
+    if not items:
+        return ListItemsResult(success=True, items=[])
+
+    parsed_items = from_dict(ListItemsResult, items, DACITE_CONFIG)
+    return parsed_items
 
 
 @dataclass
@@ -222,6 +360,7 @@ def get_totp(secret: str) -> Totp:
 @crash_reporter
 @dataclass_to_dict
 def add_login(
+    encryption_key: str,
     name: str,
     username: str = "",
     password: str = "",
@@ -230,33 +369,33 @@ def add_login(
     favorite: bool = False,
     folder_id: str = "",
 ):
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
+    session_key = get_session_key(encryption_key)
 
-        if not session_code:
-            raise Exception("No session code found")
+    if not session_key:
+        raise Exception("No session code found")
 
-        result = bitwarden_save_item(
-            type=BitwardenItemType.LOGIN,
-            session_code=session_code,
-            name=name,
-            username=username,
-            password=password,
-            notes=notes,
-            totp=totp,
-            favorite=favorite,
-            folder_id=folder_id,
-        )
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
+    result = bitwarden_save_item(
+        type=BitwardenItemType.LOGIN,
+        session_code=session_key,
+        name=name,
+        username=username,
+        password=password,
+        notes=notes,
+        totp=totp,
+        favorite=favorite,
+        folder_id=folder_id,
+    )
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
 
 
 @crash_reporter
 @dataclass_to_dict
 def add_card(
+    encryption_key: str,
     name: str,
     cardholder_name: str = "",
     brand: str = "",
@@ -267,35 +406,35 @@ def add_card(
     favorite: bool = False,
     folder_id: str = "",
 ):
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
+    session_key = get_session_key(encryption_key)
 
-        if not session_code:
-            raise Exception("No session code found")
+    if not session_key:
+        raise Exception("No session code found")
 
-        result = bitwarden_save_item(
-            type=BitwardenItemType.CARD,
-            session_code=session_code,
-            name=name,
-            cardholder_name=cardholder_name,
-            brand=brand,
-            number=number,
-            exp_month=exp_month,
-            exp_year=exp_year,
-            code=code,
-            favorite=favorite,
-            folder_id=folder_id,
-        )
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
+    result = bitwarden_save_item(
+        type=BitwardenItemType.CARD,
+        session_code=session_key,
+        name=name,
+        cardholder_name=cardholder_name,
+        brand=brand,
+        number=number,
+        exp_month=exp_month,
+        exp_year=exp_year,
+        code=code,
+        favorite=favorite,
+        folder_id=folder_id,
+    )
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
 
 
 @crash_reporter
 @dataclass_to_dict
 def edit_login(
+    encryption_key: str,
     id: str,
     name: str,
     username: str = "",
@@ -305,33 +444,33 @@ def edit_login(
     favorite: bool = False,
     folder_id: str = "",
 ):
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
+    session_key = get_session_key(encryption_key)
 
-        if not session_code:
-            raise Exception("No session code found")
+    if not session_key:
+        raise Exception("No session code found")
 
-        result = bitwarden_edit_item(
-            session_code=session_code,
-            id=id,
-            name=name,
-            username=username,
-            password=password,
-            notes=notes,
-            totp=totp,
-            favorite=favorite,
-            folder_id=folder_id,
-        )
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
+    result = bitwarden_edit_item(
+        session_code=session_key,
+        id=id,
+        name=name,
+        username=username,
+        password=password,
+        notes=notes,
+        totp=totp,
+        favorite=favorite,
+        folder_id=folder_id,
+    )
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
 
 
 @crash_reporter
 @dataclass_to_dict
 def edit_card(
+    encryption_key: str,
     id: str,
     name: str,
     cardholder_name: str = "",
@@ -343,53 +482,36 @@ def edit_card(
     favorite: bool = False,
     folder_id: str = "",
 ):
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
+    session_key = get_session_key(encryption_key)
 
-        if not session_code:
-            raise Exception("No session code found")
+    if not session_key:
+        raise Exception("No session code found")
 
-        result = bitwarden_edit_item(
-            session_code=session_code,
-            id=id,
-            name=name,
-            cardholder_name=cardholder_name,
-            brand=brand,
-            number=number,
-            exp_month=exp_month,
-            exp_year=exp_year,
-            code=code,
-            favorite=favorite,
-            folder_id=folder_id,
-        )
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
+    result = bitwarden_edit_item(
+        session_code=session_key,
+        id=id,
+        name=name,
+        cardholder_name=cardholder_name,
+        brand=brand,
+        number=number,
+        exp_month=exp_month,
+        exp_year=exp_year,
+        code=code,
+        favorite=favorite,
+        folder_id=folder_id,
+    )
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
 
 
 @crash_reporter
 @dataclass_to_dict
-def refresh() -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
-
-        if not session_code:
-            return StandardBitwardenResponse(success=False, message="Not logged in")
-
-        sync_result = bitwarden_sync(session_code)
-        if not sync_result.success:
-            return StandardBitwardenResponse(success=False, message="Failed to sync")
-        kv.put("sealed.synced", True, ttl_seconds=86400)
-        memoize_clear()
-        return StandardBitwardenResponse(success=True)
-
-
-@crash_reporter
-def cleanup():
-    with KV() as kv:
-        kv.delete_partial("bw")
+def refresh(encryption_key: str) -> StandardBitwardenResponse:
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    return StandardBitwardenResponse(success=True)
 
 
 @crash_reporter
@@ -398,11 +520,11 @@ def set_server(url: str) -> StandardBitwardenResponse:
     setup_bw()
 
     response = bitwarden_set_server(url)
-    memoize_clear()
     if not response.success:
         return StandardBitwardenResponse(success=False, message=response.data)
 
     with KV() as kv:
+        kv.delete_partial("bw")
         kv.put("config.server_url", url)
     return StandardBitwardenResponse(success=True)
 
@@ -411,7 +533,6 @@ def set_server(url: str) -> StandardBitwardenResponse:
 class Configuration:
     server_url: str
     crash_logs: bool
-    performance_mode: bool
 
 
 @crash_reporter
@@ -420,18 +541,11 @@ def get_configuration() -> Configuration:
     with KV() as kv:
         server_url = kv.get("config.server_url", "bitwarden.com", True) or "bitwarden.com"
         crash_logs = get_crash_report()
-        performance_mode = memoize_enabled()
-    return Configuration(server_url=server_url, crash_logs=crash_logs, performance_mode=performance_mode)
+    return Configuration(server_url=server_url, crash_logs=crash_logs)
 
 
 def set_crash_logs(enabled: bool):
     return set_crash_report(enabled)
-
-
-def set_performance_mode(enabled: bool):
-    if not enabled:
-        memoize_clear()
-    return set_memoize(enabled)
 
 
 @crash_reporter
@@ -442,7 +556,6 @@ def logout() -> StandardBitwardenResponse:
         kv.delete_partial("bw")
 
         response = bitwarden_logout()
-        memoize_clear()
         if not response.success:
             if "not logged in" in response.data.lower():
                 return StandardBitwardenResponse(success=True)
@@ -456,27 +569,23 @@ def generate_password() -> str:
     return password
 
 
-@crash_reporter
-@dataclass_to_dict
-def list_trash(key: str = "") -> ListItemsResult:
-    with KV() as kv:
-        memoization = memoize_get(key, "list_trash")
-        if memoization:
-            return ListItemsResult(**memoization)
-
-        session_code = kv.get("bw.session_code")
-
-        if not session_code:
+class SyncTrashItems(Event):
+    @emit_loading
+    def trigger(self, metadata: Dict) -> object:
+        encryption_key = metadata.get("encryption_key")
+        if not encryption_key:
             return ListItemsResult(success=False, items=[])
 
-        synced = kv.get("sealed.synced") or False
-        if not synced:
-            sync_result = bitwarden_sync(session_code)
-            if not sync_result.success:
-                return ListItemsResult(success=False, items=[])
-            kv.put("sealed.synced", True, ttl_seconds=86400)
+        session_key = get_session_key(encryption_key)
+        if not session_key:
+            return ListItemsResult(success=False, items=[])
 
-        items = bitwarden_list_items(session_code, trash=True)
+        sync_result = bitwarden_sync(session_key)
+        if not sync_result.success:
+            return ListItemsResult(success=False, items=[])
+
+        items = bitwarden_list_items(session_key, trash=True)
+
         parsed_items = []
         for item in items:
             if item.item_type in (BitwardenItemType.LOGIN, BitwardenItemType.CARD):
@@ -504,146 +613,172 @@ def list_trash(key: str = "") -> ListItemsResult:
                 )
 
         response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
-        memoize_set(key, "list_trash", enum_to_str(asdict(response)), ttl_seconds=CACHE_TTL_SECONDS)  # type: ignore
+        save_encrypted(encryption_key, BWKeys.LIST_TRASH_ITEMS, asdict(response))
         return response
 
 
-@crash_reporter
-def trash_item(item_id: str) -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
+get_event_dispatcher().register_event(SyncTrashItems(id="sync-trash-items"))
 
-        if not session_code:
-            return StandardBitwardenResponse(success=False, message="Not logged in")
-
-        result = bitwarden_delete_item(session_code, item_id)
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
-
-
-@crash_reporter
-def delete_item(item_id: str) -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
-
-        if not session_code:
-            return StandardBitwardenResponse(success=False, message="Not logged in")
-
-        result = bitwarden_delete_item(session_code, item_id, permanent=True)
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
-
-
-@crash_reporter
-def restore_item(item_id: str) -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
-
-        if not session_code:
-            return StandardBitwardenResponse(success=False, message="Not logged in")
-
-        result = bitwarden_restore_item(session_code, item_id)
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
-
-
-@dataclass
-class Folder:
-    id: str
-    name: str
-
-
-@dataclass
-class ListFolderResult:
-    success: bool
-    folders: List[Folder]
+# TODO: load are broken in main and trash, shows no items while its loading
 
 
 @crash_reporter
 @dataclass_to_dict
-def list_folders(key: str = "") -> ListFolderResult:
-    with KV() as kv:
-        memoization = memoize_get(key, "list_folders")
-        if memoization:
-            return ListFolderResult(**memoization)
+def list_trash(encryption_key: str) -> ListItemsResult:
+    get_event_dispatcher().schedule(event_id="sync-trash-items", metadata={"encryption_key": encryption_key})
 
-        session_code = kv.get("bw.session_code")
+    items = get_encrypted(encryption_key, BWKeys.LIST_TRASH_ITEMS)
+    if not items:
+        return ListItemsResult(success=True, items=[])
 
-        if not session_code:
-            return ListFolderResult(success=False, folders=[])
-
-        synced = kv.get("sealed.synced") or False
-        if not synced:
-            sync_result = bitwarden_sync(session_code)
-            if not sync_result.success:
-                return ListFolderResult(success=False, folders=[])
-            kv.put("sealed.synced", True, ttl_seconds=86400)
-
-        items = bitwarden_list_folders(session_code)
-        parsed_folders = []
-        for folder in items:
-            parsed_folders.append(
-                Folder(
-                    id=folder.id,
-                    name=folder.name or "",
-                )
-            )
-
-    response = ListFolderResult(success=True, folders=sorted(parsed_folders, key=lambda x: x.name))
-    memoize_set(key, "list_folders", enum_to_str(asdict(response)), ttl_seconds=CACHE_TTL_SECONDS)  # type: ignore
-    return response
+    parsed_items = from_dict(ListItemsResult, items, DACITE_CONFIG)
+    return parsed_items
 
 
 @crash_reporter
 @dataclass_to_dict
-def add_folder(name: str) -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
+def refresh_trash(encryption_key: str) -> StandardBitwardenResponse:
+    get_event_dispatcher().schedule(event_id="sync-trash-items", metadata={"encryption_key": encryption_key})
+    return StandardBitwardenResponse(success=True)
 
-        if not session_code:
-            raise Exception("No session code found")
 
-        result = bitwarden_save_folder(
-            session_code=session_code,
-            name=name,
-        )
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
+@crash_reporter
+def trash_item(encryption_key: str, item_id: str) -> StandardBitwardenResponse:
+    session_key = get_session_key(encryption_key)
+
+    if not session_key:
+        return StandardBitwardenResponse(success=False, message="Not logged in")
+
+    result = bitwarden_delete_item(session_key, item_id)
+    get_event_dispatcher().schedule(event_id="sync-trash-items", metadata={"encryption_key": encryption_key})
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@crash_reporter
+def delete_item(encryption_key: str, item_id: str) -> StandardBitwardenResponse:
+    session_key = get_session_key(encryption_key)
+
+    if not session_key:
+        return StandardBitwardenResponse(success=False, message="Not logged in")
+
+    result = bitwarden_delete_item(session_key, item_id, permanent=True)
+    get_event_dispatcher().schedule(event_id="sync-trash-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@crash_reporter
+def restore_item(encryption_key: str, item_id: str) -> StandardBitwardenResponse:
+    session_key = get_session_key(encryption_key)
+
+    if not session_key:
+        return StandardBitwardenResponse(success=False, message="Not logged in")
+
+    result = bitwarden_restore_item(session_key, item_id)
+    get_event_dispatcher().schedule(event_id="sync-trash-items", metadata={"encryption_key": encryption_key})
+    get_event_dispatcher().schedule(event_id="sync-items", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
 
 
 @crash_reporter
 @dataclass_to_dict
-def list_folder(folder_id: str, key: str = "") -> ListItemsResult:
-    with KV() as kv:
-        memoization = memoize_get(key, "list_folder", folder_id=folder_id)
-        if memoization:
-            return ListItemsResult(**memoization)
+def list_folders(encryption_key: str) -> ListFolderResult:
+    get_event_dispatcher().schedule(event_id="sync-folders", metadata={"encryption_key": encryption_key})
 
-        session_code = kv.get("bw.session_code")
+    items = get_encrypted(encryption_key, BWKeys.LIST_FOLDERS)
+    if not items:
+        return ListFolderResult(success=True, folders=[])
 
-        if not session_code:
+    parsed_items = from_dict(ListFolderResult, items, DACITE_CONFIG)
+    return parsed_items
+
+
+@crash_reporter
+@dataclass_to_dict
+def refresh_folders(encryption_key: str) -> StandardBitwardenResponse:
+    get_event_dispatcher().schedule(event_id="sync-folders", metadata={"encryption_key": encryption_key})
+    return StandardBitwardenResponse(success=True)
+
+
+@crash_reporter
+@dataclass_to_dict
+def add_folder(encryption_key: str, name: str) -> StandardBitwardenResponse:
+    session_key = get_session_key(encryption_key)
+
+    if not session_key:
+        raise Exception("No session code found")
+
+    result = bitwarden_save_folder(
+        session_code=session_key,
+        name=name,
+    )
+    get_event_dispatcher().schedule(event_id="sync-folders", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@crash_reporter
+@dataclass_to_dict
+def delete_folder(encryption_key: str, folder_id: str) -> StandardBitwardenResponse:
+    session_key = get_session_key(encryption_key)
+
+    if not session_key:
+        return StandardBitwardenResponse(success=False, message="Not logged in")
+
+    result = bitwarden_delete_folder(session_key, folder_id)
+    get_event_dispatcher().schedule(event_id="sync-folders", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
+
+
+@crash_reporter
+@dataclass_to_dict
+def edit_folder(encryption_key: str, folder_id: str, name: str) -> StandardBitwardenResponse:
+    session_key = get_session_key(encryption_key)
+
+    if not session_key:
+        return StandardBitwardenResponse(success=False, message="Not logged in")
+
+    result = bitwarden_edit_folder(session_key, folder_id, name)
+    get_event_dispatcher().schedule(event_id="sync-folders", metadata={"encryption_key": encryption_key})
+    if result.success:
+        return StandardBitwardenResponse(success=True)
+    else:
+        return StandardBitwardenResponse(success=False, message=result.data)
+
+
+class SyncFolderItems(Event):
+    @emit_loading
+    def trigger(self, metadata: Dict) -> object:
+        encryption_key = metadata.get("encryption_key")
+        folder_id = metadata.get("folder_id")
+
+        if not encryption_key or not folder_id:
             return ListItemsResult(success=False, items=[])
 
-        synced = kv.get("sealed.synced") or False
-        if not synced:
-            sync_result = bitwarden_sync(session_code)
-            if not sync_result.success:
-                return ListItemsResult(success=False, items=[])
-            kv.put("sealed.synced", True, ttl_seconds=86400)
+        session_key = get_session_key(encryption_key)
+        if not session_key:
+            return ListItemsResult(success=False, items=[])
 
-        items = bitwarden_list_items(session_code, folder_id=folder_id)
+        sync_result = bitwarden_sync(session_key)
+        if not sync_result.success:
+            return ListItemsResult(success=False, items=[])
+
+        items = bitwarden_list_items(session_key, folder_id=folder_id)
+
         parsed_items = []
         for item in items:
             if item.item_type in (BitwardenItemType.LOGIN, BitwardenItemType.CARD):
@@ -670,46 +805,33 @@ def list_folder(folder_id: str, key: str = "") -> ListItemsResult:
                     )
                 )
 
-    response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
-    memoize_set(
-        key,
-        "list_folder",
-        enum_to_str(asdict(response)),  # type: ignore
-        ttl_seconds=CACHE_TTL_SECONDS,
-        folder_id=folder_id,
+        response = ListItemsResult(success=True, items=sorted(parsed_items, key=lambda x: (not x.favorite, x.name)))
+        save_encrypted(encryption_key, f"{BWKeys.LIST_FOLDER_ITEMS}.{folder_id}", asdict(response))
+        return response
+
+
+get_event_dispatcher().register_event(SyncFolderItems(id="sync-folder-items"))
+
+
+@crash_reporter
+@dataclass_to_dict
+def list_folder(encryption_key: str, folder_id: str) -> ListItemsResult:
+    get_event_dispatcher().schedule(
+        event_id="sync-folder-items", metadata={"encryption_key": encryption_key, "folder_id": folder_id}
     )
-    return response
+
+    items = get_encrypted(encryption_key, f"{BWKeys.LIST_FOLDER_ITEMS}.{folder_id}")
+    if not items:
+        return ListItemsResult(success=True, items=[])
+
+    parsed_items = from_dict(ListItemsResult, items, DACITE_CONFIG)
+    return parsed_items
 
 
 @crash_reporter
 @dataclass_to_dict
-def delete_folder(folder_id: str) -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
-
-        if not session_code:
-            return StandardBitwardenResponse(success=False, message="Not logged in")
-
-        result = bitwarden_delete_folder(session_code, folder_id)
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
-
-
-@crash_reporter
-@dataclass_to_dict
-def edit_folder(folder_id: str, name: str) -> StandardBitwardenResponse:
-    with KV() as kv:
-        session_code = kv.get("bw.session_code")
-
-        if not session_code:
-            return StandardBitwardenResponse(success=False, message="Not logged in")
-
-        result = bitwarden_edit_folder(session_code, folder_id, name)
-        memoize_clear()
-        if result.success:
-            return StandardBitwardenResponse(success=True)
-        else:
-            return StandardBitwardenResponse(success=False, message=result.data)
+def refresh_folder(encryption_key: str, folder_id: str) -> StandardBitwardenResponse:
+    get_event_dispatcher().schedule(
+        event_id="sync-folder-items", metadata={"encryption_key": encryption_key, "folder_id": folder_id}
+    )
+    return StandardBitwardenResponse(success=True)

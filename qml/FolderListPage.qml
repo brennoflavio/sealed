@@ -25,22 +25,15 @@ Page {
     id: folderListPage
 
     property var folders: []
-    property bool isLoading: false
-    property string errorMessage: ""
+    property bool hasLoaded: false
 
     function loadFolders() {
-        isLoading = true;
-        errorMessage = "";
-        loadToast.showing = true;
-        loadToast.message = i18n.tr("Loading folders...");
         python.call('main.list_folders', [SessionModel.getEncryptionKey()], function(result) {
-            isLoading = false;
-            loadToast.showing = false;
             if (result.success) {
                 folders = result.folders;
+                hasLoaded = true;
             } else {
-                errorMessage = i18n.tr("Failed to load folders");
-                folders = [];
+                toast.show(i18n.tr("Failed to load folders"));
             }
         });
     }
@@ -63,7 +56,7 @@ Page {
         showSearchBar: true
         searchPlaceholder: i18n.tr("Search folders...")
         searchFields: ["title"]
-        emptyMessage: errorMessage !== "" ? errorMessage : i18n.tr("No folders found")
+        emptyMessage: hasLoaded ? i18n.tr("No folders found") : i18n.tr("Loading folders...")
         itemActions: [{
             "id": "edit-folder",
             "iconName": "edit"
@@ -93,7 +86,7 @@ Page {
         }
 
         anchors {
-            top: folderHeader.bottom
+            top: loadingBar.bottom
             topMargin: units.gu(2)
             left: parent.left
             right: parent.right
@@ -115,7 +108,9 @@ Page {
             iconName: "reload"
             text: i18n.tr("Refresh")
             onClicked: {
-                loadFolders();
+                toast.show(i18n.tr("Refreshing folders..."));
+                python.call('main.refresh_folders', [SessionModel.getEncryptionKey()], function() {
+                });
             }
         }
 
@@ -181,7 +176,7 @@ Page {
                 onClicked: {
                     dialogue.errorText = "";
                     dialogue.isLoading = true;
-                    python.call('main.add_folder', [folderNameField.text.trim()], function(result) {
+                    python.call('main.add_folder', [SessionModel.getEncryptionKey(), folderNameField.text.trim()], function(result) {
                         dialogue.isLoading = false;
                         if (result.success) {
                             PopupUtils.close(dialogue);
@@ -262,7 +257,7 @@ Page {
                 onClicked: {
                     editDialogue.errorText = "";
                     editDialogue.isLoading = true;
-                    python.call('main.edit_folder', [editDialogue.folderId, editFolderNameField.text.trim()], function(result) {
+                    python.call('main.edit_folder', [SessionModel.getEncryptionKey(), editDialogue.folderId, editFolderNameField.text.trim()], function(result) {
                         editDialogue.isLoading = false;
                         if (result.success) {
                             PopupUtils.close(editDialogue);
@@ -340,7 +335,7 @@ Page {
                 onClicked: {
                     deleteDialogue.errorText = "";
                     deleteDialogue.isLoading = true;
-                    python.call('main.delete_folder', [deleteDialogue.folderId], function(result) {
+                    python.call('main.delete_folder', [SessionModel.getEncryptionKey(), deleteDialogue.folderId], function(result) {
                         deleteDialogue.isLoading = false;
                         if (result.success) {
                             PopupUtils.close(deleteDialogue);
@@ -366,10 +361,6 @@ Page {
 
     }
 
-    LoadToast {
-        id: loadToast
-    }
-
     Python {
         id: python
 
@@ -377,16 +368,31 @@ Page {
             addImportPath(Qt.resolvedUrl('../src/'));
             importModule('main', function() {
             });
+            setHandler('sync-folders', function(result) {
+                if (result.success) {
+                    folders = result.folders;
+                    hasLoaded = true;
+                    toast.show(i18n.tr("Folders synced"));
+                } else {
+                    toast.show(i18n.tr("Failed to load folders"));
+                }
+            });
         }
         onError: {
-            errorMessage = i18n.tr("An error occurred");
-            isLoading = false;
-            loadToast.showing = false;
+            toast.show(i18n.tr("An error occurred"));
         }
     }
 
     Toast {
         id: toast
+    }
+
+    LoadingBar {
+        id: loadingBar
+
+        anchors.top: folderHeader.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
     }
 
     header: AppHeader {
