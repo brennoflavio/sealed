@@ -22,6 +22,7 @@ setup(APP_NAME, CRASH_REPORT_URL)
 import secrets
 import string
 from dataclasses import asdict, dataclass
+from datetime import timedelta
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional
 
@@ -811,6 +812,45 @@ class SyncFolderItems(Event):
 
 
 get_event_dispatcher().register_event(SyncFolderItems(id="sync-folder-items"))
+
+
+@dataclass
+class SessionValidationResult:
+    valid: bool
+    logged_out: bool
+
+
+class ValidateSessionKeyEvent(Event):
+    def __init__(self):
+        super().__init__(id="validate-session-key", execution_interval=timedelta(seconds=30))
+
+    def trigger(self, metadata: Dict) -> object:
+        # Check if a session key exists in storage
+        if not exist_session_key():
+            # No session key stored, nothing to validate
+            return SessionValidationResult(valid=True, logged_out=False)
+
+        # Check the Bitwarden CLI status
+        try:
+            status = bitwarden_status()
+        except Exception:
+            # If we can't check status, assume session is valid
+            return SessionValidationResult(valid=True, logged_out=False)
+
+        # If status is UNAUTHENTICATED or LOCKED, the session is invalid
+        if status in (BitwardenStatus.UNAUTHENTICATED, BitwardenStatus.LOCKED):
+            # Clear the session key and all cached Bitwarden data
+            with KV() as kv:
+                kv.delete_partial("bw")
+
+            # Notify the UI that the session is invalid
+            return SessionValidationResult(valid=False, logged_out=True)
+
+        # Session is valid
+        return SessionValidationResult(valid=True, logged_out=False)
+
+
+get_event_dispatcher().register_event(ValidateSessionKeyEvent())
 
 
 @crash_reporter
