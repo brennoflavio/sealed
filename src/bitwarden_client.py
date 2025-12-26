@@ -18,9 +18,9 @@ import json
 import traceback
 from base64 import b64encode
 from dataclasses import dataclass
-from enum import StrEnum
 from typing import Dict, List, Optional
 
+from src.ut_components.enum import StrEnum
 from src.utils import run_bw
 
 

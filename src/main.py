@@ -22,7 +22,6 @@ setup(APP_NAME, CRASH_REPORT_URL)
 import secrets
 import string
 from dataclasses import asdict, dataclass
-from enum import StrEnum
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional
 
@@ -57,6 +56,7 @@ from src.encryption import (
 )
 from src.totp import generate_totp
 from src.ut_components.crash import crash_reporter, get_crash_report, set_crash_report
+from src.ut_components.enum import StrEnum
 from src.ut_components.event import Event, get_event_dispatcher
 from src.ut_components.kv import KV
 from src.ut_components.utils import dataclass_to_dict
