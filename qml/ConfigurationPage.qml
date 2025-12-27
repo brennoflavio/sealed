@@ -24,6 +24,7 @@ Page {
 
     property bool crashReportEnabled: false
     property string serverUrl: ""
+    property bool rememberPassword: false
 
     function loadConfiguration() {
         python.call('main.get_configuration', [], function(config) {
@@ -35,6 +36,10 @@ Page {
                     configurationPage.serverUrl = config.server_url;
                     serverUrlField.text = config.server_url;
                 }
+
+                if (config.hasOwnProperty('remember_password'))
+                    configurationPage.rememberPassword = config.remember_password;
+
             }
         });
     }
@@ -167,6 +172,24 @@ Page {
                     onToggled: function(checked) {
                         configurationPage.crashReportEnabled = checked;
                         python.call('main.set_crash_logs', [checked], function() {
+                        });
+                    }
+                }
+
+            }
+
+            ConfigurationGroup {
+                width: parent.width
+                title: i18n.tr("Security")
+
+                ToggleOption {
+                    width: parent.width
+                    title: i18n.tr("Remember Password")
+                    subtitle: i18n.tr("Save password securely for faster login")
+                    checked: configurationPage.rememberPassword
+                    onToggled: function(checked) {
+                        configurationPage.rememberPassword = checked;
+                        python.call('main.set_remember_password', [checked], function() {
                         });
                     }
                 }

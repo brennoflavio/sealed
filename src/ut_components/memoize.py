@@ -210,3 +210,25 @@ def delete_all_memoized():
     """
     with KV() as kv:
         kv.delete_partial("memoize")
+
+
+def memoize_enabled() -> bool:
+    """
+    Check if memoization is enabled for the application.
+
+    Returns:
+        bool: True if memoization is enabled, False otherwise.
+    """
+    with KV() as kv:
+        return kv.get("memoize.enabled", False) or False
+
+
+def set_memoize(enabled: bool) -> None:
+    """
+    Enable or disable memoization for the application.
+
+    Args:
+        enabled (bool): True to enable memoization, False to disable it.
+    """
+    with KV() as kv:
+        kv.put("memoize.enabled", enabled)

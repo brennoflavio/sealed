@@ -50,6 +50,8 @@ from src.bitwarden_client import (
     bitwarden_unlock,
 )
 from src.encryption import (
+    decrypt,
+    encrypt,
     generate_key_from_password,
     get_encrypted,
     save_encrypted,
@@ -59,6 +61,7 @@ from src.ut_components.crash import crash_reporter, get_crash_report, set_crash_
 from src.ut_components.enum import StrEnum
 from src.ut_components.event import Event, get_event_dispatcher
 from src.ut_components.kv import KV
+from src.ut_components.memoize import memoize_enabled, set_memoize
 from src.ut_components.utils import dataclass_to_dict
 
 DACITE_CONFIG = Config(strict=True, cast=[BitwardenItemType])
@@ -173,6 +176,8 @@ def login(email: str = "", password: str = "", code: str = "") -> StandardBitwar
         else:
             encryption_key = generate_key_from_password(password)
             set_session_key(encryption_key, session_key_response.data)
+            # If login is successful, save password if option is enabled
+            save_password_if_enabled(password, email)
             return StandardBitwardenResponse(success=True, message=encryption_key)
     elif password:
         try:
@@ -533,6 +538,8 @@ def set_server(url: str) -> StandardBitwardenResponse:
 class Configuration:
     server_url: str
     crash_logs: bool
+    performance_mode: bool
+    remember_password: bool
 
 
 @crash_reporter
@@ -541,7 +548,9 @@ def get_configuration() -> Configuration:
     with KV() as kv:
         server_url = kv.get("config.server_url", "bitwarden.com", True) or "bitwarden.com"
         crash_logs = get_crash_report()
-    return Configuration(server_url=server_url, crash_logs=crash_logs)
+        performance_mode = memoize_enabled()
+        remember_password = kv.get("sealed.remember_password") or False
+    return Configuration(server_url=server_url, crash_logs=crash_logs, performance_mode=performance_mode, remember_password=remember_password)
 
 
 def set_crash_logs(enabled: bool):
@@ -550,10 +559,32 @@ def set_crash_logs(enabled: bool):
 
 @crash_reporter
 @dataclass_to_dict
+def set_remember_password(enabled: bool):
+    with KV() as kv:
+        kv.put("sealed.remember_password", enabled)
+        if not enabled:
+            # If disabled, remove stored password
+            kv.delete("sealed.stored_password")
+            kv.delete("sealed.password_salt")
+
+
+@crash_reporter
+@dataclass_to_dict
 def logout() -> StandardBitwardenResponse:
     with KV() as kv:
+        # Keep configuration settings but remove session data
+        remember_password_setting = kv.get("sealed.remember_password") or False
+        crash_logs_setting = kv.get("sealed.crash_logs") or False
+        server_url_setting = kv.get("sealed.server_url") or ""
+
         kv.delete_partial("sealed")
         kv.delete_partial("bw")
+
+        # Restore configuration settings
+        kv.put("sealed.remember_password", remember_password_setting)
+        kv.put("sealed.crash_logs", crash_logs_setting)
+        if server_url_setting:
+            kv.put("sealed.server_url", server_url_setting)
 
         response = bitwarden_logout()
         if not response.success:
@@ -567,6 +598,84 @@ def generate_password() -> str:
     characters = string.ascii_letters + string.digits
     password = "".join(secrets.choice(characters) for _ in range(16))
     return password
+
+
+def get_remembered_password() -> dict:
+    with KV() as kv:
+        remember_enabled = kv.get("sealed.remember_password") or False
+        stored_password = ""
+        if remember_enabled:
+            encrypted_password = kv.get("sealed.stored_password")
+            password_salt = kv.get("sealed.password_salt")
+            if encrypted_password and password_salt:
+                try:
+                    # Use a specific salt for the remembered password
+                    import hashlib
+                    from cryptography.hazmat.primitives import hashes
+                    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+                    import base64
+                    from base64 import urlsafe_b64decode
+                    
+                    # Create a key from the specific salt
+                    salt_bytes = password_salt.encode('utf-8')
+                    kdf = PBKDF2HMAC(
+                        algorithm=hashes.SHA256(),
+                        length=32,
+                        salt=salt_bytes,
+                        iterations=480000,
+                    )
+                    key = base64.urlsafe_b64encode(kdf.derive(b"sealed_password_key"))
+                    stored_password = decrypt(key, urlsafe_b64decode(encrypted_password.encode()))
+                except Exception as e:
+                    # If decryption fails, ignore silently
+                    stored_password = ""
+        return {
+            "enabled": remember_enabled,
+            "password": stored_password
+        }
+
+
+def save_password_if_enabled(password: str, email: str = "") -> None:
+    with KV() as kv:
+        remember_enabled = kv.get("sealed.remember_password") or False
+        if remember_enabled and password:
+            try:
+                # Use a unique salt based on email or generate a random salt
+                import os
+                import hashlib
+                from cryptography.hazmat.primitives import hashes
+                from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+                import base64
+                
+                # Generate unique salt if no email, or use email
+                if email:
+                    salt = f"sealed_{email}_salt"
+                else:
+                    # Get or generate a persistent salt
+                    existing_salt = kv.get("sealed.password_salt")
+                    if existing_salt:
+                        salt = existing_salt
+                    else:
+                        salt = f"sealed_{os.urandom(16).hex()}_salt"
+                
+                kv.put("sealed.password_salt", salt)
+                
+                # Create a key from the specific salt
+                salt_bytes = salt.encode('utf-8')
+                kdf = PBKDF2HMAC(
+                    algorithm=hashes.SHA256(),
+                    length=32,
+                    salt=salt_bytes,
+                    iterations=480000,
+                )
+                key = base64.urlsafe_b64encode(kdf.derive(b"sealed_password_key"))
+                
+                # Encrypt the password
+                encrypted_password = urlsafe_b64encode(encrypt(key, password)).decode()
+                kv.put("sealed.stored_password", encrypted_password)
+            except Exception as e:
+                # If encryption fails, don't save
+                pass
 
 
 class SyncTrashItems(Event):
