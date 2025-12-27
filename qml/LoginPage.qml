@@ -44,9 +44,20 @@ Page {
             loginScreenData = result;
             visibleFields = result.fields || [];
             isCheckingLogin = false;
-            if (!result.show)
+            if (!result.show) {
                 navigateToPasswordList();
+            } else {
+                // Load remembered password if it exists
+                loadRememberedPassword();
+            }
+        });
+    }
 
+    function loadRememberedPassword() {
+        python.call('main.get_remembered_password', [], function(result) {
+            if (result && result.enabled && result.password) {
+                password = result.password;
+            }
         });
     }
 
