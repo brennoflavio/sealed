@@ -10,6 +10,7 @@ import base64
 import json
 import os
 from base64 import urlsafe_b64decode, urlsafe_b64encode
+from importlib.metadata import version
 from typing import Dict, Optional
 
 from cryptography.fernet import Fernet
@@ -35,12 +36,16 @@ def generate_key_from_password(
             salt = urlsafe_b64decode(salt_str)
         iterations = 480000
         password_bytes = password.encode("utf-8")
-        kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256(),
-            length=32,
-            salt=salt,
-            iterations=iterations,
-        )
+        kdf_kwargs = {
+            "algorithm": hashes.SHA256(),
+            "length": 32,
+            "salt": salt,
+            "iterations": iterations,
+        }
+        if tuple(version("cryptography").split(".")) < ("3", "2", "0"):
+            from cryptography.hazmat.backends import default_backend
+            kdf_kwargs["backend"] = default_backend()
+        kdf = PBKDF2HMAC(**kdf_kwargs)
         key = base64.urlsafe_b64encode(kdf.derive(password_bytes))
         return urlsafe_b64encode(key).decode("utf-8")
 
