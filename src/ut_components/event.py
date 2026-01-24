@@ -23,7 +23,7 @@ from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, is_dataclass
 from datetime import datetime, timedelta
 from math import ceil
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import pyotherside
 
@@ -112,7 +112,7 @@ class Event(ABC):
         self.next_execution_date: Optional[datetime] = None
 
     @abstractmethod
-    def trigger(self, metadata: Optional[Dict]) -> object | Dict | None:
+    def trigger(self, metadata: Optional[Dict]) -> Union[object, Dict, None]:
         """
         Execute the event's action and optionally return a result.
 
