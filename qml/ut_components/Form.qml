@@ -119,6 +119,7 @@ Item {
             iconName: form.buttonIconName
             enabled: form.allFieldsValid
             onClicked: {
+                Qt.inputMethod.commit();
                 form.submitted();
             }
         }
