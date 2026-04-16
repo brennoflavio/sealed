@@ -1,0 +1,636 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the sealed.brennoflavio package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sealed.brennoflavio\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-02 04:51+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ta\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: ../qml/ConfigurationPage.qml:44
+msgid "Saving server URL..."
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:59
+msgid "Logging out..."
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:99
+msgid "Bitwarden Server"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:105
+msgid "Server URL"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:106
+msgid "https://vault.bitwarden.com"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:111
+msgid "Save Server URL"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:134
+msgid "Account"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:137
+msgid "Logout"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:160
+msgid "Privacy"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:164
+msgid "Crash logs"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:165
+msgid "Send anonymous crash reports"
+msgstr ""
+
+#: ../qml/ConfigurationPage.qml:207
+msgid "Configuration"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:36 ../qml/FolderListPage.qml:377
+msgid "Failed to load folders"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:57
+msgid "Search folders..."
+msgstr ""
+
+#: ../qml/FolderListPage.qml:59 ../qml/UpsertCardPage.qml:365
+#: ../qml/UpsertLoginPage.qml:321
+msgid "Loading folders..."
+msgstr ""
+
+#: ../qml/FolderListPage.qml:59
+msgid "No folders found"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:109 ../qml/FolderPasswordListPage.qml:178
+#: ../qml/PasswordListPage.qml:179 ../qml/TrashListPage.qml:175
+msgid "Refresh"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:111
+msgid "Refreshing folders..."
+msgstr ""
+
+#: ../qml/FolderListPage.qml:119 ../qml/FolderPasswordListPage.qml:188
+#: ../qml/PasswordListPage.qml:189
+msgid "Add"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:136
+msgid "Add New Folder"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:141 ../qml/FolderListPage.qml:221
+msgid "Folder name"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:165 ../qml/FolderListPage.qml:246
+#: ../qml/FolderListPage.qml:324
+msgid "Loading..."
+msgstr ""
+
+#: ../qml/FolderListPage.qml:173 ../qml/FolderListPage.qml:254
+#: ../qml/UpsertCardPage.qml:129 ../qml/UpsertLoginPage.qml:124
+msgid "Save"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:183
+msgid "Folder created successfully"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:186
+msgid "Failed to create folder"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:194 ../qml/FolderListPage.qml:275
+#: ../qml/FolderListPage.qml:353 ../qml/FolderPasswordListPage.qml:231
+#: ../qml/PasswordListPage.qml:248
+msgid "Cancel"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:216
+msgid "Edit Folder"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:264
+msgid "Folder updated successfully"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:267
+msgid "Failed to update folder"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:297
+msgid "Delete Folder"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:302
+msgid "Are you sure you want to delete \"%1\"?"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:332 ../qml/PasswordCardPage.qml:240
+#: ../qml/PasswordLoginPage.qml:217
+msgid "Delete"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:342
+msgid "Folder deleted successfully"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:345
+msgid "Failed to delete folder"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:375
+msgid "Folders synced"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:382 ../qml/FolderPasswordListPage.qml:261
+#: ../qml/PasswordListPage.qml:279 ../qml/TrashListPage.qml:203
+msgid "An error occurred"
+msgstr ""
+
+#: ../qml/FolderListPage.qml:401 ../qml/PasswordListPage.qml:197
+msgid "Folders"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:38 ../qml/FolderPasswordListPage.qml:256
+#: ../qml/PasswordListPage.qml:39 ../qml/PasswordListPage.qml:273
+msgid "Failed to load passwords"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:45 ../qml/PasswordCardPage.qml:49
+#: ../qml/PasswordListPage.qml:46 ../qml/PasswordLoginPage.qml:45
+#: ../qml/TrashListPage.qml:46
+msgid "%1 copied to clipboard"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:95 ../qml/PasswordListPage.qml:96
+msgid "Search passwords..."
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:97
+msgid "Loading passwords..."
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:97
+msgid "No passwords in this folder"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:111 ../qml/PasswordListPage.qml:112
+#: ../qml/PasswordLoginPage.qml:93 ../qml/PasswordLoginPage.qml:96
+#: ../qml/TrashListPage.qml:110 ../qml/UpsertLoginPage.qml:154
+msgid "Username"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:113 ../qml/PasswordListPage.qml:114
+#: ../qml/TrashListPage.qml:112
+msgid "No username"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:116 ../qml/LoginPage.qml:135
+#: ../qml/PasswordListPage.qml:117 ../qml/PasswordLoginPage.qml:100
+#: ../qml/PasswordLoginPage.qml:106 ../qml/TrashListPage.qml:115
+#: ../qml/UpsertLoginPage.qml:165
+msgid "Password"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:118 ../qml/PasswordListPage.qml:119
+#: ../qml/TrashListPage.qml:117
+msgid "No password"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:180 ../qml/PasswordListPage.qml:181
+msgid "Refreshing passwords..."
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:202 ../qml/PasswordListPage.qml:219
+msgid "Add New Entry"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:203 ../qml/PasswordListPage.qml:220
+msgid "Choose the type of entry you want to add:"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:211 ../qml/LoginPage.qml:110
+#: ../qml/PasswordListPage.qml:228
+msgid "Login"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:221 ../qml/PasswordListPage.qml:238
+msgid "Card"
+msgstr ""
+
+#: ../qml/FolderPasswordListPage.qml:254 ../qml/PasswordListPage.qml:271
+msgid "Passwords synced"
+msgstr ""
+
+#: ../qml/LoginPage.qml:68
+msgid "Login failed"
+msgstr ""
+
+#: ../qml/LoginPage.qml:101
+msgid "Bitwarden Login"
+msgstr ""
+
+#: ../qml/LoginPage.qml:123
+msgid "Email"
+msgstr ""
+
+#: ../qml/LoginPage.qml:124
+msgid "Enter your email"
+msgstr ""
+
+#: ../qml/LoginPage.qml:136
+msgid "Enter your password"
+msgstr ""
+
+#: ../qml/LoginPage.qml:148
+msgid "Two-Factor Code - Only Authenticator app is supported"
+msgstr ""
+
+#: ../qml/LoginPage.qml:149
+msgid "Enter your 2fa code"
+msgstr ""
+
+#: ../qml/LoginPage.qml:180
+msgid "Logging in... This may take a few moments"
+msgstr ""
+
+#: ../qml/LoginPage.qml:187
+msgid "Checking login status..."
+msgstr ""
+
+#: ../qml/LoginPage.qml:213 sealed.desktop.in.h:1
+msgid "Sealed"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:76 ../qml/PasswordLoginPage.qml:72
+msgid "Main"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:79 ../qml/PasswordCardPage.qml:81
+#: ../qml/PasswordLoginPage.qml:75 ../qml/PasswordLoginPage.qml:77
+#: ../qml/UpsertCardPage.qml:145 ../qml/UpsertLoginPage.qml:142
+msgid "Name"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:86 ../qml/PasswordCardPage.qml:88
+#: ../qml/PasswordLoginPage.qml:82 ../qml/PasswordLoginPage.qml:84
+#: ../qml/UpsertCardPage.qml:279 ../qml/UpsertLoginPage.qml:235
+msgid "Folder"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:94
+msgid "Card Details"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:97 ../qml/PasswordCardPage.qml:100
+#: ../qml/UpsertCardPage.qml:155
+msgid "Cardholder Name"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:104 ../qml/PasswordCardPage.qml:107
+#: ../qml/UpsertCardPage.qml:164
+msgid "Brand"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:111 ../qml/PasswordCardPage.qml:118
+#: ../qml/UpsertCardPage.qml:173
+msgid "Card Number"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:122 ../qml/PasswordCardPage.qml:125
+msgid "Expiry Date"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:129 ../qml/PasswordCardPage.qml:135
+#: ../qml/UpsertCardPage.qml:221
+msgid "Security Code"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:146 ../qml/PasswordLoginPage.qml:130
+msgid "Misc"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:151 ../qml/PasswordCardPage.qml:154
+#: ../qml/PasswordLoginPage.qml:133 ../qml/PasswordLoginPage.qml:136
+#: ../qml/UpsertCardPage.qml:240 ../qml/UpsertLoginPage.qml:185
+msgid "Notes"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:159 ../qml/PasswordLoginPage.qml:140
+msgid "Created"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:162 ../qml/PasswordLoginPage.qml:143
+msgid "Created date"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:167 ../qml/PasswordLoginPage.qml:147
+msgid "Updated"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:169 ../qml/PasswordLoginPage.qml:149
+msgid "Updated date"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:190 ../qml/PasswordLoginPage.qml:170
+msgid "Edit"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:212 ../qml/PasswordListPage.qml:205
+#: ../qml/PasswordLoginPage.qml:189 ../qml/TrashListPage.qml:222
+msgid "Trash"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:226 ../qml/PasswordLoginPage.qml:203
+msgid "Restore"
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:272 ../qml/PasswordLoginPage.qml:249
+msgid "Restoring item..."
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:278 ../qml/PasswordLoginPage.qml:255
+msgid "Deleting item..."
+msgstr ""
+
+#: ../qml/PasswordCardPage.qml:284 ../qml/PasswordLoginPage.qml:261
+msgid "Moving to trash..."
+msgstr ""
+
+#: ../qml/PasswordListPage.qml:98
+msgid "Loading your passwords..."
+msgstr ""
+
+#: ../qml/PasswordListPage.qml:98
+msgid "No passwords"
+msgstr ""
+
+#: ../qml/PasswordListPage.qml:298
+msgid "Passwords"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:90
+msgid "Credentials"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:111
+msgid "TOTP"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:112
+msgid "Tap to copy"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:116
+msgid "TOTP Code"
+msgstr ""
+
+#: ../qml/TrashListPage.qml:39 ../qml/TrashListPage.qml:198
+msgid "Failed to load deleted items"
+msgstr ""
+
+#: ../qml/TrashListPage.qml:94
+msgid "Search deleted items..."
+msgstr ""
+
+#: ../qml/TrashListPage.qml:96
+msgid "Loading deleted items..."
+msgstr ""
+
+#: ../qml/TrashListPage.qml:96
+msgid "No items in trash"
+msgstr ""
+
+#: ../qml/TrashListPage.qml:177
+msgid "Refreshing deleted items..."
+msgstr ""
+
+#: ../qml/TrashListPage.qml:196
+msgid "Trash synced"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:47 ../qml/UpsertLoginPage.qml:44
+msgid "Name is required"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:70
+msgid "Failed to update card"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:81
+msgid "Failed to add card"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:96 ../qml/UpsertCardPage.qml:101
+#: ../qml/UpsertLoginPage.qml:91 ../qml/UpsertLoginPage.qml:96
+msgid "No Folder"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:146
+msgid "e.g., Personal Visa"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:156
+msgid "e.g., John Doe"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:165
+msgid "e.g., Visa, Mastercard, Amex"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:174
+msgid "e.g., 4111 1111 1111 1111"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:177
+msgid "Only numbers and spaces are allowed"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:195
+msgid "Expiry Month"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:196
+msgid "MM"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:199
+msgid "Enter a valid month (1-12)"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:206
+msgid "Expiry Year"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:207
+msgid "YYYY"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:210
+msgid "Enter a 4-digit year"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:222
+msgid "e.g., 123"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:225
+msgid "Enter a 3 or 4 digit security code"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:250 ../qml/UpsertLoginPage.qml:195
+msgid "Additional notes..."
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
+msgid "Favorite"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:263
+msgid "Mark this card as a favorite"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:348 ../qml/UpsertLoginPage.qml:304
+msgid "An error occurred while saving"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:358
+msgid "Saving card..."
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:358
+msgid "Updating card..."
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:380
+msgid "Add Card"
+msgstr ""
+
+#: ../qml/UpsertCardPage.qml:380
+msgid "Edit Card"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:65 ../qml/UpsertLoginPage.qml:76
+msgid "Failed to save login"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:143
+msgid "e.g., Gmail Account"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:155
+msgid "e.g., user@example.com"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:166
+msgid "Enter password"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:209
+msgid "TOTP Secret"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:210
+msgid "e.g., JBSWY3DPEHPK3PXP"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:219
+msgid "Mark this login as a favorite"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:314
+msgid "Saving login..."
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:336
+msgid "Add Login"
+msgstr ""
+
+#: ../qml/UpsertLoginPage.qml:336
+msgid "Edit Login"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:16 ../qml/lib/CustomFieldsList.qml:32
+msgid "No"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:16 ../qml/lib/CustomFieldsList.qml:32
+msgid "Yes"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:20
+msgid "Linked: Username"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:23
+msgid "Linked: Password"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:25
+msgid "Linked field"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:37
+msgid "Custom Fields"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:44
+msgid "(unnamed)"
+msgstr ""
+
+#: ../qml/lib/CustomFieldsList.qml:51
+msgid "Field"
+msgstr ""
+
+#: ../qml/lib/PasswordField.qml:12 ../qml/ut_components/InputField.qml:91
+msgid "Invalid input"
+msgstr ""
+
+#: ../qml/lib/PasswordField.qml:131 ../qml/ut_components/InputField.qml:166
+msgid "This field is required"
+msgstr ""
+
+#: ../qml/ut_components/ActionableList.qml:92
+#: ../qml/ut_components/CardList.qml:74
+msgid "Search"
+msgstr ""
+
+#: ../qml/ut_components/ActionableList.qml:94
+#: ../qml/ut_components/CardList.qml:72
+msgid "No items"
+msgstr ""
+
+#: ../qml/ut_components/AppHeader.qml:78
+msgid "Back"
+msgstr ""
+
+#: ../qml/ut_components/AppHeader.qml:94
+msgid "Settings"
+msgstr ""
+
+#: ../qml/ut_components/Form.qml:67
+msgid "Submit"
+msgstr ""
