@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-02 04:51+0000\n"
-"PO-Revision-Date: 2026-04-10 08:38+0000\n"
+"PO-Revision-Date: 2026-04-16 11:38+0000\n"
 "Last-Translator: Serhii Horichenko <serhii@horichenko.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/ubports/sealed/"
 "uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -238,7 +238,7 @@ msgstr ""
 #: ../qml/FolderPasswordListPage.qml:211 ../qml/LoginPage.qml:110
 #: ../qml/PasswordListPage.qml:228
 msgid "Login"
-msgstr ""
+msgstr "Вхід"
 
 #: ../qml/FolderPasswordListPage.qml:221 ../qml/PasswordListPage.qml:238
 msgid "Card"
@@ -510,7 +510,7 @@ msgstr ""
 
 #: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
 msgid "Favorite"
-msgstr ""
+msgstr "Улюблене"
 
 #: ../qml/UpsertCardPage.qml:263
 msgid "Mark this card as a favorite"
