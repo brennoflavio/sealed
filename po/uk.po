@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-02 04:51+0000\n"
-"PO-Revision-Date: 2026-04-16 11:38+0000\n"
+"PO-Revision-Date: 2026-04-17 04:38+0000\n"
 "Last-Translator: Serhii Horichenko <serhii@horichenko.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/ubports/sealed/"
 "uk/>\n"
@@ -22,15 +22,15 @@ msgstr ""
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
-msgstr ""
+msgstr "Збереження URL сервера..."
 
 #: ../qml/ConfigurationPage.qml:59
 msgid "Logging out..."
-msgstr ""
+msgstr "Вихід..."
 
 #: ../qml/ConfigurationPage.qml:99
 msgid "Bitwarden Server"
-msgstr ""
+msgstr "Сервер Bitwarden"
 
 #: ../qml/ConfigurationPage.qml:105
 msgid "Server URL"
@@ -38,23 +38,23 @@ msgstr "URL сервера"
 
 #: ../qml/ConfigurationPage.qml:106
 msgid "https://vault.bitwarden.com"
-msgstr ""
+msgstr "https://vault.bitwarden.com"
 
 #: ../qml/ConfigurationPage.qml:111
 msgid "Save Server URL"
-msgstr ""
+msgstr "Зберегти URL сервера"
 
 #: ../qml/ConfigurationPage.qml:134
 msgid "Account"
-msgstr ""
+msgstr "Обліковий запис"
 
 #: ../qml/ConfigurationPage.qml:137
 msgid "Logout"
-msgstr ""
+msgstr "Вийти"
 
 #: ../qml/ConfigurationPage.qml:160
 msgid "Privacy"
-msgstr ""
+msgstr "Конфіденційність"
 
 #: ../qml/ConfigurationPage.qml:164
 msgid "Crash logs"
@@ -70,20 +70,20 @@ msgstr "Конфігурація"
 
 #: ../qml/FolderListPage.qml:36 ../qml/FolderListPage.qml:377
 msgid "Failed to load folders"
-msgstr ""
+msgstr "Помилка завантаження тек"
 
 #: ../qml/FolderListPage.qml:57
 msgid "Search folders..."
-msgstr ""
+msgstr "Пошук тек..."
 
 #: ../qml/FolderListPage.qml:59 ../qml/UpsertCardPage.qml:365
 #: ../qml/UpsertLoginPage.qml:321
 msgid "Loading folders..."
-msgstr ""
+msgstr "Завантаження тек..."
 
 #: ../qml/FolderListPage.qml:59
 msgid "No folders found"
-msgstr ""
+msgstr "Теки не знайдено"
 
 #: ../qml/FolderListPage.qml:109 ../qml/FolderPasswordListPage.qml:178
 #: ../qml/PasswordListPage.qml:179 ../qml/TrashListPage.qml:175
@@ -92,25 +92,25 @@ msgstr "Оновити"
 
 #: ../qml/FolderListPage.qml:111
 msgid "Refreshing folders..."
-msgstr ""
+msgstr "Оновлення тек..."
 
 #: ../qml/FolderListPage.qml:119 ../qml/FolderPasswordListPage.qml:188
 #: ../qml/PasswordListPage.qml:189
 msgid "Add"
-msgstr ""
+msgstr "Додати"
 
 #: ../qml/FolderListPage.qml:136
 msgid "Add New Folder"
-msgstr ""
+msgstr "Додати нову теку"
 
 #: ../qml/FolderListPage.qml:141 ../qml/FolderListPage.qml:221
 msgid "Folder name"
-msgstr ""
+msgstr "Назва теки"
 
 #: ../qml/FolderListPage.qml:165 ../qml/FolderListPage.qml:246
 #: ../qml/FolderListPage.qml:324
 msgid "Loading..."
-msgstr ""
+msgstr "Завантажується..."
 
 #: ../qml/FolderListPage.qml:173 ../qml/FolderListPage.qml:254
 #: ../qml/UpsertCardPage.qml:129 ../qml/UpsertLoginPage.qml:124
@@ -119,11 +119,11 @@ msgstr "Зберегти"
 
 #: ../qml/FolderListPage.qml:183
 msgid "Folder created successfully"
-msgstr ""
+msgstr "Теку успішно створено"
 
 #: ../qml/FolderListPage.qml:186
 msgid "Failed to create folder"
-msgstr ""
+msgstr "Помилка створення теки"
 
 #: ../qml/FolderListPage.qml:194 ../qml/FolderListPage.qml:275
 #: ../qml/FolderListPage.qml:353 ../qml/FolderPasswordListPage.qml:231
@@ -133,19 +133,19 @@ msgstr "Скасувати"
 
 #: ../qml/FolderListPage.qml:216
 msgid "Edit Folder"
-msgstr ""
+msgstr "Редагувати теку"
 
 #: ../qml/FolderListPage.qml:264
 msgid "Folder updated successfully"
-msgstr ""
+msgstr "Теку успішно оновлено"
 
 #: ../qml/FolderListPage.qml:267
 msgid "Failed to update folder"
-msgstr ""
+msgstr "Помилка оновлення теки"
 
 #: ../qml/FolderListPage.qml:297
 msgid "Delete Folder"
-msgstr ""
+msgstr "Видалити теку"
 
 #: ../qml/FolderListPage.qml:302
 msgid "Are you sure you want to delete \"%1\"?"
@@ -258,7 +258,7 @@ msgstr ""
 
 #: ../qml/LoginPage.qml:123
 msgid "Email"
-msgstr ""
+msgstr "Е-пошта"
 
 #: ../qml/LoginPage.qml:124
 msgid "Enter your email"
@@ -334,7 +334,7 @@ msgstr ""
 
 #: ../qml/PasswordCardPage.qml:146 ../qml/PasswordLoginPage.qml:130
 msgid "Misc"
-msgstr ""
+msgstr "Різне"
 
 #: ../qml/PasswordCardPage.qml:151 ../qml/PasswordCardPage.qml:154
 #: ../qml/PasswordLoginPage.qml:133 ../qml/PasswordLoginPage.qml:136
@@ -365,11 +365,11 @@ msgstr "Редагувати"
 #: ../qml/PasswordCardPage.qml:212 ../qml/PasswordListPage.qml:205
 #: ../qml/PasswordLoginPage.qml:189 ../qml/TrashListPage.qml:222
 msgid "Trash"
-msgstr ""
+msgstr "Смітник"
 
 #: ../qml/PasswordCardPage.qml:226 ../qml/PasswordLoginPage.qml:203
 msgid "Restore"
-msgstr ""
+msgstr "Відновити"
 
 #: ../qml/PasswordCardPage.qml:272 ../qml/PasswordLoginPage.qml:249
 msgid "Restoring item..."
