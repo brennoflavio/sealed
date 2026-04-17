@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-02 04:51+0000\n"
-"PO-Revision-Date: 2026-04-17 04:38+0000\n"
+"PO-Revision-Date: 2026-04-18 10:09+0000\n"
 "Last-Translator: Serhii Horichenko <serhii@horichenko.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/ubports/sealed/"
 "uk/>\n"
@@ -149,7 +149,7 @@ msgstr "Видалити теку"
 
 #: ../qml/FolderListPage.qml:302
 msgid "Are you sure you want to delete \"%1\"?"
-msgstr ""
+msgstr "Ви дійсно бажаєте видалити \"%1\"?"
 
 #: ../qml/FolderListPage.qml:332 ../qml/PasswordCardPage.qml:240
 #: ../qml/PasswordLoginPage.qml:217
@@ -158,47 +158,47 @@ msgstr "Видалити"
 
 #: ../qml/FolderListPage.qml:342
 msgid "Folder deleted successfully"
-msgstr ""
+msgstr "Теку успішно видалено"
 
 #: ../qml/FolderListPage.qml:345
 msgid "Failed to delete folder"
-msgstr ""
+msgstr "Помилка видалення теки"
 
 #: ../qml/FolderListPage.qml:375
 msgid "Folders synced"
-msgstr ""
+msgstr "Теки синхронізовано"
 
 #: ../qml/FolderListPage.qml:382 ../qml/FolderPasswordListPage.qml:261
 #: ../qml/PasswordListPage.qml:279 ../qml/TrashListPage.qml:203
 msgid "An error occurred"
-msgstr ""
+msgstr "Сталася помилка"
 
 #: ../qml/FolderListPage.qml:401 ../qml/PasswordListPage.qml:197
 msgid "Folders"
-msgstr ""
+msgstr "Теки"
 
 #: ../qml/FolderPasswordListPage.qml:38 ../qml/FolderPasswordListPage.qml:256
 #: ../qml/PasswordListPage.qml:39 ../qml/PasswordListPage.qml:273
 msgid "Failed to load passwords"
-msgstr ""
+msgstr "Помилка завантаження паролів"
 
 #: ../qml/FolderPasswordListPage.qml:45 ../qml/PasswordCardPage.qml:49
 #: ../qml/PasswordListPage.qml:46 ../qml/PasswordLoginPage.qml:45
 #: ../qml/TrashListPage.qml:46
 msgid "%1 copied to clipboard"
-msgstr ""
+msgstr "%1 скопійовано до буфера обміну"
 
 #: ../qml/FolderPasswordListPage.qml:95 ../qml/PasswordListPage.qml:96
 msgid "Search passwords..."
-msgstr ""
+msgstr "Пошук паролів..."
 
 #: ../qml/FolderPasswordListPage.qml:97
 msgid "Loading passwords..."
-msgstr ""
+msgstr "Завантаження паролів..."
 
 #: ../qml/FolderPasswordListPage.qml:97
 msgid "No passwords in this folder"
-msgstr ""
+msgstr "У цій теці паролів немає"
 
 #: ../qml/FolderPasswordListPage.qml:111 ../qml/PasswordListPage.qml:112
 #: ../qml/PasswordLoginPage.qml:93 ../qml/PasswordLoginPage.qml:96
@@ -209,7 +209,7 @@ msgstr "Ім'я користувача"
 #: ../qml/FolderPasswordListPage.qml:113 ../qml/PasswordListPage.qml:114
 #: ../qml/TrashListPage.qml:112
 msgid "No username"
-msgstr ""
+msgstr "Імена користувачів не знайдено"
 
 #: ../qml/FolderPasswordListPage.qml:116 ../qml/LoginPage.qml:135
 #: ../qml/PasswordListPage.qml:117 ../qml/PasswordLoginPage.qml:100
@@ -221,19 +221,19 @@ msgstr "Пароль"
 #: ../qml/FolderPasswordListPage.qml:118 ../qml/PasswordListPage.qml:119
 #: ../qml/TrashListPage.qml:117
 msgid "No password"
-msgstr ""
+msgstr "Паролів немає"
 
 #: ../qml/FolderPasswordListPage.qml:180 ../qml/PasswordListPage.qml:181
 msgid "Refreshing passwords..."
-msgstr ""
+msgstr "Оновлення паролів..."
 
 #: ../qml/FolderPasswordListPage.qml:202 ../qml/PasswordListPage.qml:219
 msgid "Add New Entry"
-msgstr ""
+msgstr "Додати новий запис"
 
 #: ../qml/FolderPasswordListPage.qml:203 ../qml/PasswordListPage.qml:220
 msgid "Choose the type of entry you want to add:"
-msgstr ""
+msgstr "Оберіть тип запису, який бажаєте додати:"
 
 #: ../qml/FolderPasswordListPage.qml:211 ../qml/LoginPage.qml:110
 #: ../qml/PasswordListPage.qml:228
@@ -242,19 +242,19 @@ msgstr "Вхід"
 
 #: ../qml/FolderPasswordListPage.qml:221 ../qml/PasswordListPage.qml:238
 msgid "Card"
-msgstr ""
+msgstr "Картка"
 
 #: ../qml/FolderPasswordListPage.qml:254 ../qml/PasswordListPage.qml:271
 msgid "Passwords synced"
-msgstr ""
+msgstr "Паролі синхронізовано"
 
 #: ../qml/LoginPage.qml:68
 msgid "Login failed"
-msgstr ""
+msgstr "Вхід не вдався"
 
 #: ../qml/LoginPage.qml:101
 msgid "Bitwarden Login"
-msgstr ""
+msgstr "Вхід до Bitwarden"
 
 #: ../qml/LoginPage.qml:123
 msgid "Email"
@@ -262,7 +262,7 @@ msgstr "Е-пошта"
 
 #: ../qml/LoginPage.qml:124
 msgid "Enter your email"
-msgstr ""
+msgstr "Вкажіть свою е-пошту"
 
 #: ../qml/LoginPage.qml:136
 msgid "Enter your password"
@@ -270,67 +270,67 @@ msgstr "Вкажіть свій пароль"
 
 #: ../qml/LoginPage.qml:148
 msgid "Two-Factor Code - Only Authenticator app is supported"
-msgstr ""
+msgstr "Підтримується лише програма для двофакторної автентифікації"
 
 #: ../qml/LoginPage.qml:149
 msgid "Enter your 2fa code"
-msgstr ""
+msgstr "Вкажіть свій 2FA код"
 
 #: ../qml/LoginPage.qml:180
 msgid "Logging in... This may take a few moments"
-msgstr ""
+msgstr "Триває вхід... Може зайняти трохи часу"
 
 #: ../qml/LoginPage.qml:187
 msgid "Checking login status..."
-msgstr ""
+msgstr "Перевірка статусу входу..."
 
 #: ../qml/LoginPage.qml:213 sealed.desktop.in.h:1
 msgid "Sealed"
-msgstr ""
+msgstr "Sealed"
 
 #: ../qml/PasswordCardPage.qml:76 ../qml/PasswordLoginPage.qml:72
 msgid "Main"
-msgstr ""
+msgstr "Головне"
 
 #: ../qml/PasswordCardPage.qml:79 ../qml/PasswordCardPage.qml:81
 #: ../qml/PasswordLoginPage.qml:75 ../qml/PasswordLoginPage.qml:77
 #: ../qml/UpsertCardPage.qml:145 ../qml/UpsertLoginPage.qml:142
 msgid "Name"
-msgstr ""
+msgstr "Назва"
 
 #: ../qml/PasswordCardPage.qml:86 ../qml/PasswordCardPage.qml:88
 #: ../qml/PasswordLoginPage.qml:82 ../qml/PasswordLoginPage.qml:84
 #: ../qml/UpsertCardPage.qml:279 ../qml/UpsertLoginPage.qml:235
 msgid "Folder"
-msgstr ""
+msgstr "Тека"
 
 #: ../qml/PasswordCardPage.qml:94
 msgid "Card Details"
-msgstr ""
+msgstr "Подробиці картки"
 
 #: ../qml/PasswordCardPage.qml:97 ../qml/PasswordCardPage.qml:100
 #: ../qml/UpsertCardPage.qml:155
 msgid "Cardholder Name"
-msgstr ""
+msgstr "Ім'я власника картки"
 
 #: ../qml/PasswordCardPage.qml:104 ../qml/PasswordCardPage.qml:107
 #: ../qml/UpsertCardPage.qml:164
 msgid "Brand"
-msgstr ""
+msgstr "Бренд"
 
 #: ../qml/PasswordCardPage.qml:111 ../qml/PasswordCardPage.qml:118
 #: ../qml/UpsertCardPage.qml:173
 msgid "Card Number"
-msgstr ""
+msgstr "Номер картки"
 
 #: ../qml/PasswordCardPage.qml:122 ../qml/PasswordCardPage.qml:125
 msgid "Expiry Date"
-msgstr ""
+msgstr "Термін дії"
 
 #: ../qml/PasswordCardPage.qml:129 ../qml/PasswordCardPage.qml:135
 #: ../qml/UpsertCardPage.qml:221
 msgid "Security Code"
-msgstr ""
+msgstr "Код безпеки"
 
 #: ../qml/PasswordCardPage.qml:146 ../qml/PasswordLoginPage.qml:130
 msgid "Misc"
@@ -340,23 +340,23 @@ msgstr "Різне"
 #: ../qml/PasswordLoginPage.qml:133 ../qml/PasswordLoginPage.qml:136
 #: ../qml/UpsertCardPage.qml:240 ../qml/UpsertLoginPage.qml:185
 msgid "Notes"
-msgstr ""
+msgstr "Нотатки"
 
 #: ../qml/PasswordCardPage.qml:159 ../qml/PasswordLoginPage.qml:140
 msgid "Created"
-msgstr ""
+msgstr "Створено"
 
 #: ../qml/PasswordCardPage.qml:162 ../qml/PasswordLoginPage.qml:143
 msgid "Created date"
-msgstr ""
+msgstr "Дата створення"
 
 #: ../qml/PasswordCardPage.qml:167 ../qml/PasswordLoginPage.qml:147
 msgid "Updated"
-msgstr ""
+msgstr "Оновлено"
 
 #: ../qml/PasswordCardPage.qml:169 ../qml/PasswordLoginPage.qml:149
 msgid "Updated date"
-msgstr ""
+msgstr "Дата оновлення"
 
 #: ../qml/PasswordCardPage.qml:190 ../qml/PasswordLoginPage.qml:170
 msgid "Edit"
@@ -373,140 +373,140 @@ msgstr "Відновити"
 
 #: ../qml/PasswordCardPage.qml:272 ../qml/PasswordLoginPage.qml:249
 msgid "Restoring item..."
-msgstr ""
+msgstr "Відновлення елементу..."
 
 #: ../qml/PasswordCardPage.qml:278 ../qml/PasswordLoginPage.qml:255
 msgid "Deleting item..."
-msgstr ""
+msgstr "Видалення елементу..."
 
 #: ../qml/PasswordCardPage.qml:284 ../qml/PasswordLoginPage.qml:261
 msgid "Moving to trash..."
-msgstr ""
+msgstr "Перенесення до смітника..."
 
 #: ../qml/PasswordListPage.qml:98
 msgid "Loading your passwords..."
-msgstr ""
+msgstr "Завантаження Ваших паролів..."
 
 #: ../qml/PasswordListPage.qml:98
 msgid "No passwords"
-msgstr ""
+msgstr "Паролів немає"
 
 #: ../qml/PasswordListPage.qml:298
 msgid "Passwords"
-msgstr ""
+msgstr "Паролі"
 
 #: ../qml/PasswordLoginPage.qml:90
 msgid "Credentials"
-msgstr ""
+msgstr "Дані доступу"
 
 #: ../qml/PasswordLoginPage.qml:111
 msgid "TOTP"
-msgstr ""
+msgstr "TOTP"
 
 #: ../qml/PasswordLoginPage.qml:112
 msgid "Tap to copy"
-msgstr ""
+msgstr "Торкніться, щоб скопіювати"
 
 #: ../qml/PasswordLoginPage.qml:116
 msgid "TOTP Code"
-msgstr ""
+msgstr "Код TOTP"
 
 #: ../qml/TrashListPage.qml:39 ../qml/TrashListPage.qml:198
 msgid "Failed to load deleted items"
-msgstr ""
+msgstr "Помилка завантаження видалених елементів"
 
 #: ../qml/TrashListPage.qml:94
 msgid "Search deleted items..."
-msgstr ""
+msgstr "Пошук видалених елементів..."
 
 #: ../qml/TrashListPage.qml:96
 msgid "Loading deleted items..."
-msgstr ""
+msgstr "Завантаження видалених елементів..."
 
 #: ../qml/TrashListPage.qml:96
 msgid "No items in trash"
-msgstr ""
+msgstr "У смітнику нічого немає"
 
 #: ../qml/TrashListPage.qml:177
 msgid "Refreshing deleted items..."
-msgstr ""
+msgstr "Оновлення видалених елементів..."
 
 #: ../qml/TrashListPage.qml:196
 msgid "Trash synced"
-msgstr ""
+msgstr "Смітник синхронізовано"
 
 #: ../qml/UpsertCardPage.qml:47 ../qml/UpsertLoginPage.qml:44
 msgid "Name is required"
-msgstr ""
+msgstr "Назва обов'язкова"
 
 #: ../qml/UpsertCardPage.qml:70
 msgid "Failed to update card"
-msgstr ""
+msgstr "Помилка оновлення картки"
 
 #: ../qml/UpsertCardPage.qml:81
 msgid "Failed to add card"
-msgstr ""
+msgstr "Картку додати не вийшло"
 
 #: ../qml/UpsertCardPage.qml:96 ../qml/UpsertCardPage.qml:101
 #: ../qml/UpsertLoginPage.qml:91 ../qml/UpsertLoginPage.qml:96
 msgid "No Folder"
-msgstr ""
+msgstr "Тек немає"
 
 #: ../qml/UpsertCardPage.qml:146
 msgid "e.g., Personal Visa"
-msgstr ""
+msgstr "напр., Особиста Visa"
 
 #: ../qml/UpsertCardPage.qml:156
 msgid "e.g., John Doe"
-msgstr ""
+msgstr "напр., Пилип Орлик"
 
 #: ../qml/UpsertCardPage.qml:165
 msgid "e.g., Visa, Mastercard, Amex"
-msgstr ""
+msgstr "напр., Visa, Mastercard, Amex"
 
 #: ../qml/UpsertCardPage.qml:174
 msgid "e.g., 4111 1111 1111 1111"
-msgstr ""
+msgstr "напр., 4441 1144 4111 4111"
 
 #: ../qml/UpsertCardPage.qml:177
 msgid "Only numbers and spaces are allowed"
-msgstr ""
+msgstr "Дозволені лише цифри та пробіли"
 
 #: ../qml/UpsertCardPage.qml:195
 msgid "Expiry Month"
-msgstr ""
+msgstr "Місяць терміну дії"
 
 #: ../qml/UpsertCardPage.qml:196
 msgid "MM"
-msgstr ""
+msgstr "MM"
 
 #: ../qml/UpsertCardPage.qml:199
 msgid "Enter a valid month (1-12)"
-msgstr ""
+msgstr "Вкажіть дійсний місяць (1-12)"
 
 #: ../qml/UpsertCardPage.qml:206
 msgid "Expiry Year"
-msgstr ""
+msgstr "Рік терміну дії"
 
 #: ../qml/UpsertCardPage.qml:207
 msgid "YYYY"
-msgstr ""
+msgstr "YYYY"
 
 #: ../qml/UpsertCardPage.qml:210
 msgid "Enter a 4-digit year"
-msgstr ""
+msgstr "Введіть 4 цифри року"
 
 #: ../qml/UpsertCardPage.qml:222
 msgid "e.g., 123"
-msgstr ""
+msgstr "напр., 123"
 
 #: ../qml/UpsertCardPage.qml:225
 msgid "Enter a 3 or 4 digit security code"
-msgstr ""
+msgstr "Введіть код безпеки з 3 або 4 цифр"
 
 #: ../qml/UpsertCardPage.qml:250 ../qml/UpsertLoginPage.qml:195
 msgid "Additional notes..."
-msgstr ""
+msgstr "Додаткові нотатки..."
 
 #: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
 msgid "Favorite"
@@ -514,99 +514,99 @@ msgstr "Улюблене"
 
 #: ../qml/UpsertCardPage.qml:263
 msgid "Mark this card as a favorite"
-msgstr ""
+msgstr "Позначити цю картку улюбленою"
 
 #: ../qml/UpsertCardPage.qml:348 ../qml/UpsertLoginPage.qml:304
 msgid "An error occurred while saving"
-msgstr ""
+msgstr "Під час збереження сталася помилка"
 
 #: ../qml/UpsertCardPage.qml:358
 msgid "Saving card..."
-msgstr ""
+msgstr "Збереження картки..."
 
 #: ../qml/UpsertCardPage.qml:358
 msgid "Updating card..."
-msgstr ""
+msgstr "Оновлення картки..."
 
 #: ../qml/UpsertCardPage.qml:380
 msgid "Add Card"
-msgstr ""
+msgstr "Додати картку"
 
 #: ../qml/UpsertCardPage.qml:380
 msgid "Edit Card"
-msgstr ""
+msgstr "Редагувати картку"
 
 #: ../qml/UpsertLoginPage.qml:65 ../qml/UpsertLoginPage.qml:76
 msgid "Failed to save login"
-msgstr ""
+msgstr "Помилка збереження логіну"
 
 #: ../qml/UpsertLoginPage.qml:143
 msgid "e.g., Gmail Account"
-msgstr ""
+msgstr "напр., обліковий запис Gmail"
 
 #: ../qml/UpsertLoginPage.qml:155
 msgid "e.g., user@example.com"
-msgstr ""
+msgstr "напр., user@gmail.com"
 
 #: ../qml/UpsertLoginPage.qml:166
 msgid "Enter password"
-msgstr ""
+msgstr "Введіть пароль"
 
 #: ../qml/UpsertLoginPage.qml:209
 msgid "TOTP Secret"
-msgstr ""
+msgstr "Секрет TOTP"
 
 #: ../qml/UpsertLoginPage.qml:210
 msgid "e.g., JBSWY3DPEHPK3PXP"
-msgstr ""
+msgstr "напр., JBSWY3DPEHPK3PXP"
 
 #: ../qml/UpsertLoginPage.qml:219
 msgid "Mark this login as a favorite"
-msgstr ""
+msgstr "Позначити цей запис улюбленим"
 
 #: ../qml/UpsertLoginPage.qml:314
 msgid "Saving login..."
-msgstr ""
+msgstr "Збереження запису..."
 
 #: ../qml/UpsertLoginPage.qml:336
 msgid "Add Login"
-msgstr ""
+msgstr "Додати логін"
 
 #: ../qml/UpsertLoginPage.qml:336
 msgid "Edit Login"
-msgstr ""
+msgstr "Редагувати логін"
 
 #: ../qml/lib/CustomFieldsList.qml:16 ../qml/lib/CustomFieldsList.qml:32
 msgid "No"
-msgstr ""
+msgstr "Ні"
 
 #: ../qml/lib/CustomFieldsList.qml:16 ../qml/lib/CustomFieldsList.qml:32
 msgid "Yes"
-msgstr ""
+msgstr "Так"
 
 #: ../qml/lib/CustomFieldsList.qml:20
 msgid "Linked: Username"
-msgstr ""
+msgstr "Пов'язане: Ім'я користувача"
 
 #: ../qml/lib/CustomFieldsList.qml:23
 msgid "Linked: Password"
-msgstr ""
+msgstr "Пов'язане: Пароль"
 
 #: ../qml/lib/CustomFieldsList.qml:25
 msgid "Linked field"
-msgstr ""
+msgstr "Пов'язане поле"
 
 #: ../qml/lib/CustomFieldsList.qml:37
 msgid "Custom Fields"
-msgstr ""
+msgstr "Користувацькі поля"
 
 #: ../qml/lib/CustomFieldsList.qml:44
 msgid "(unnamed)"
-msgstr ""
+msgstr "(без назви)"
 
 #: ../qml/lib/CustomFieldsList.qml:51
 msgid "Field"
-msgstr ""
+msgstr "Поле"
 
 #: ../qml/lib/PasswordField.qml:12 ../qml/ut_components/InputField.qml:91
 msgid "Invalid input"
