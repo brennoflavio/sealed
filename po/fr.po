@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-02 04:51+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-04-26 08:09+0000\n"
+"Last-Translator: libermax <libremax@protonmail.com>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/ubports/sealed/"
+"fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -85,7 +87,7 @@ msgstr ""
 #: ../qml/FolderListPage.qml:109 ../qml/FolderPasswordListPage.qml:178
 #: ../qml/PasswordListPage.qml:179 ../qml/TrashListPage.qml:175
 msgid "Refresh"
-msgstr ""
+msgstr "Actualiser"
 
 #: ../qml/FolderListPage.qml:111
 msgid "Refreshing folders..."
@@ -507,7 +509,7 @@ msgstr ""
 
 #: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
 msgid "Favorite"
-msgstr ""
+msgstr "Favori"
 
 #: ../qml/UpsertCardPage.qml:263
 msgid "Mark this card as a favorite"
@@ -616,7 +618,7 @@ msgstr ""
 #: ../qml/ut_components/ActionableList.qml:92
 #: ../qml/ut_components/CardList.qml:74
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
 #: ../qml/ut_components/ActionableList.qml:94
 #: ../qml/ut_components/CardList.qml:72
@@ -625,11 +627,11 @@ msgstr ""
 
 #: ../qml/ut_components/AppHeader.qml:78
 msgid "Back"
-msgstr ""
+msgstr "Retour"
 
 #: ../qml/ut_components/AppHeader.qml:94
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: ../qml/ut_components/Form.qml:67
 msgid "Submit"
