@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-02 04:51+0000\n"
-"PO-Revision-Date: 2026-04-26 08:09+0000\n"
+"PO-Revision-Date: 2026-04-27 16:44+0000\n"
 "Last-Translator: libermax <libremax@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/ubports/sealed/"
 "fr/>\n"
@@ -33,7 +33,7 @@ msgstr ""
 
 #: ../qml/ConfigurationPage.qml:105
 msgid "Server URL"
-msgstr ""
+msgstr "URL du serveur"
 
 #: ../qml/ConfigurationPage.qml:106
 msgid "https://vault.bitwarden.com"
@@ -57,15 +57,15 @@ msgstr ""
 
 #: ../qml/ConfigurationPage.qml:164
 msgid "Crash logs"
-msgstr ""
+msgstr "Journaux d'erreurs"
 
 #: ../qml/ConfigurationPage.qml:165
 msgid "Send anonymous crash reports"
-msgstr ""
+msgstr "Envoyer des rapports d'erreur anonymes"
 
 #: ../qml/ConfigurationPage.qml:207
 msgid "Configuration"
-msgstr ""
+msgstr "Configuration"
 
 #: ../qml/FolderListPage.qml:36 ../qml/FolderListPage.qml:377
 msgid "Failed to load folders"
@@ -114,7 +114,7 @@ msgstr ""
 #: ../qml/FolderListPage.qml:173 ../qml/FolderListPage.qml:254
 #: ../qml/UpsertCardPage.qml:129 ../qml/UpsertLoginPage.qml:124
 msgid "Save"
-msgstr ""
+msgstr "Enregistrer"
 
 #: ../qml/FolderListPage.qml:183
 msgid "Folder created successfully"
@@ -128,7 +128,7 @@ msgstr ""
 #: ../qml/FolderListPage.qml:353 ../qml/FolderPasswordListPage.qml:231
 #: ../qml/PasswordListPage.qml:248
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: ../qml/FolderListPage.qml:216
 msgid "Edit Folder"
@@ -153,7 +153,7 @@ msgstr ""
 #: ../qml/FolderListPage.qml:332 ../qml/PasswordCardPage.qml:240
 #: ../qml/PasswordLoginPage.qml:217
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: ../qml/FolderListPage.qml:342
 msgid "Folder deleted successfully"
@@ -203,7 +203,7 @@ msgstr ""
 #: ../qml/PasswordLoginPage.qml:93 ../qml/PasswordLoginPage.qml:96
 #: ../qml/TrashListPage.qml:110 ../qml/UpsertLoginPage.qml:154
 msgid "Username"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: ../qml/FolderPasswordListPage.qml:113 ../qml/PasswordListPage.qml:114
 #: ../qml/TrashListPage.qml:112
@@ -215,7 +215,7 @@ msgstr ""
 #: ../qml/PasswordLoginPage.qml:106 ../qml/TrashListPage.qml:115
 #: ../qml/UpsertLoginPage.qml:165
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: ../qml/FolderPasswordListPage.qml:118 ../qml/PasswordListPage.qml:119
 #: ../qml/TrashListPage.qml:117
@@ -265,7 +265,7 @@ msgstr ""
 
 #: ../qml/LoginPage.qml:136
 msgid "Enter your password"
-msgstr ""
+msgstr "Saisissez votre mot de passe"
 
 #: ../qml/LoginPage.qml:148
 msgid "Two-Factor Code - Only Authenticator app is supported"
@@ -609,11 +609,11 @@ msgstr ""
 
 #: ../qml/lib/PasswordField.qml:12 ../qml/ut_components/InputField.qml:91
 msgid "Invalid input"
-msgstr ""
+msgstr "Saisie non valide"
 
 #: ../qml/lib/PasswordField.qml:131 ../qml/ut_components/InputField.qml:166
 msgid "This field is required"
-msgstr ""
+msgstr "Ce champ est requis"
 
 #: ../qml/ut_components/ActionableList.qml:92
 #: ../qml/ut_components/CardList.qml:74
@@ -623,7 +623,7 @@ msgstr "Rechercher"
 #: ../qml/ut_components/ActionableList.qml:94
 #: ../qml/ut_components/CardList.qml:72
 msgid "No items"
-msgstr ""
+msgstr "Aucun élément"
 
 #: ../qml/ut_components/AppHeader.qml:78
 msgid "Back"
@@ -635,4 +635,4 @@ msgstr "Paramètres"
 
 #: ../qml/ut_components/Form.qml:67
 msgid "Submit"
-msgstr ""
+msgstr "Soumettre"
