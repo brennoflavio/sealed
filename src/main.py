@@ -54,7 +54,7 @@ from src.encryption import (
     get_encrypted,
     save_encrypted,
 )
-from src.totp import generate_totp
+from src.totp import get_totp_state
 from src.ut_components.crash import crash_reporter, get_crash_report, set_crash_report
 from src.ut_components.enum import StrEnum
 from src.ut_components.event import Event, get_event_dispatcher
@@ -356,17 +356,19 @@ def list_items(encryption_key: str) -> ListItemsResult:
 @dataclass
 class Totp:
     code: str
+    seconds_remaining: int = 0
 
 
 @crash_reporter
 @dataclass_to_dict
 def get_totp(secret: str) -> Totp:
     if not secret:
-        return Totp(code="")
+        return Totp(code="", seconds_remaining=0)
     try:
-        return Totp(code=generate_totp(secret))
+        code, seconds_remaining = get_totp_state(secret)
+        return Totp(code=code, seconds_remaining=seconds_remaining)
     except Exception:
-        return Totp(code="")
+        return Totp(code="", seconds_remaining=0)
 
 
 @crash_reporter

@@ -31,14 +31,25 @@ def generate_hotp(secret, counter, digits=6, digest=hashlib.sha1):
     return str(code).zfill(digits)
 
 
-def generate_totp(secret, time_step=30, digits=6, digest=hashlib.sha1):
-    counter = int(time.time() // time_step)
+def _decode_secret(secret):
     if isinstance(secret, str):
-        secret = secret.upper()
+        secret = secret.replace(" ", "").replace("-", "").upper()
         padding = 8 - len(secret) % 8
         if padding != 8:
             secret += "=" * padding
-        secret_bytes = base64.b32decode(secret)
-    else:
-        secret_bytes = secret
-    return generate_hotp(secret_bytes, counter, digits, digest)
+        return base64.b32decode(secret)
+    return secret
+
+
+def get_totp_state(secret, time_step=30, digits=6, digest=hashlib.sha1):
+    secret_bytes = _decode_secret(secret)
+    current_time = int(time.time())
+    counter = current_time // time_step
+    seconds_remaining = time_step - (current_time % time_step)
+    code = generate_hotp(secret_bytes, counter, digits, digest)
+    return code, seconds_remaining
+
+
+def generate_totp(secret, time_step=30, digits=6, digest=hashlib.sha1):
+    code, _ = get_totp_state(secret, time_step, digits, digest)
+    return code

@@ -262,7 +262,7 @@ Page {
         }
     }
 
-    Toast {
+    KeyboardAwareToast {
         id: toast
     }
 

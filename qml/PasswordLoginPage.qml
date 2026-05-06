@@ -33,16 +33,77 @@ Page {
     property string updated: ""
     property bool passwordVisible: false
     property bool favorite: false
+    property bool totpVisible: false
     property bool isTrashed: false
     property string folderId: ""
     property string folderName: ""
     property var fields: []
+    property string currentTotpCode: ""
+    property int currentTotpSecondsRemaining: 0
+    property bool totpLoaded: false
+    property bool pythonReady: false
 
     signal backRequested()
 
     function copyToClipboard(text, itemName) {
         Clipboard.push(text);
         toast.show(i18n.tr("%1 copied to clipboard").arg(itemName));
+    }
+
+    function resetTotpState() {
+        currentTotpCode = "";
+        currentTotpSecondsRemaining = 0;
+        totpLoaded = false;
+        totpVisible = false;
+    }
+
+    function refreshTotp(copyAfterRefresh) {
+        var requestedSecret = totpSecret;
+        if (requestedSecret === "") {
+            resetTotpState();
+            return ;
+        }
+        python.call('main.get_totp', [requestedSecret], function(result) {
+            if (requestedSecret !== passwordLoginPage.totpSecret)
+                return ;
+
+            currentTotpCode = result && result.code ? result.code : "";
+            currentTotpSecondsRemaining = result && result.seconds_remaining ? result.seconds_remaining : 0;
+            totpLoaded = true;
+            if (copyAfterRefresh) {
+                if (currentTotpCode !== "")
+                    copyToClipboard(currentTotpCode, i18n.tr("TOTP Code"));
+                else
+                    toast.show(i18n.tr("TOTP unavailable"));
+            }
+        });
+    }
+
+    function totpTitle() {
+        if (!totpLoaded)
+            return i18n.tr("TOTP - Loading...");
+
+        if (currentTotpCode === "")
+            return i18n.tr("TOTP - Unavailable");
+
+        return i18n.tr("TOTP - %1 seconds remaining").arg(currentTotpSecondsRemaining);
+    }
+
+    function totpSubtitle() {
+        if (!totpLoaded)
+            return i18n.tr("Loading...");
+
+        if (currentTotpCode === "")
+            return i18n.tr("Unavailable");
+
+        return "";
+    }
+
+    onTotpSecretChanged: {
+        resetTotpState();
+        if (pythonReady && visible && totpSecret !== "")
+            refreshTotp();
+
     }
 
     Flickable {
@@ -108,15 +169,13 @@ Page {
 
                 DetailField {
                     visible: totpSecret !== ""
-                    title: i18n.tr("TOTP")
-                    subtitle: i18n.tr("Tap to copy")
-                    onCopyClicked: {
-                        python.call('main.get_totp', [totpSecret], function(result) {
-                            if (result && result.code)
-                                copyToClipboard(result.code, i18n.tr("TOTP Code"));
-
-                        });
-                    }
+                    title: passwordLoginPage.totpTitle()
+                    subtitle: passwordLoginPage.totpSubtitle()
+                    visibleContent: currentTotpCode
+                    showVisibilityToggle: totpLoaded && currentTotpCode !== ""
+                    isContentVisible: passwordLoginPage.totpVisible
+                    onVisibilityToggled: passwordLoginPage.totpVisible = !passwordLoginPage.totpVisible
+                    onCopyClicked: passwordLoginPage.refreshTotp(true)
                 }
 
             }
@@ -153,6 +212,24 @@ Page {
 
         }
 
+    }
+
+    Timer {
+        interval: 1000
+        repeat: true
+        running: passwordLoginPage.pythonReady && passwordLoginPage.visible && passwordLoginPage.totpSecret !== ""
+        triggeredOnStart: true
+        onTriggered: {
+            if (!passwordLoginPage.totpLoaded) {
+                passwordLoginPage.refreshTotp();
+                return ;
+            }
+            if (passwordLoginPage.currentTotpSecondsRemaining > 1) {
+                passwordLoginPage.currentTotpSecondsRemaining -= 1;
+                return ;
+            }
+            passwordLoginPage.refreshTotp();
+        }
     }
 
     BottomBar {
@@ -233,13 +310,14 @@ Page {
         Component.onCompleted: {
             addImportPath(Qt.resolvedUrl('../src/'));
             importModule('main', function() {
+                passwordLoginPage.pythonReady = true;
             });
         }
         onError: {
         }
     }
 
-    Toast {
+    KeyboardAwareToast {
         id: toast
     }
 

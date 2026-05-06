@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-02 04:51+0000\n"
+"POT-Creation-Date: 2026-05-06 16:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,7 +105,7 @@ msgid "Folder name"
 msgstr ""
 
 #: ../qml/FolderListPage.qml:165 ../qml/FolderListPage.qml:246
-#: ../qml/FolderListPage.qml:324
+#: ../qml/FolderListPage.qml:324 ../qml/PasswordLoginPage.qml:94
 msgid "Loading..."
 msgstr ""
 
@@ -149,7 +149,7 @@ msgid "Are you sure you want to delete \"%1\"?"
 msgstr ""
 
 #: ../qml/FolderListPage.qml:332 ../qml/PasswordCardPage.qml:240
-#: ../qml/PasswordLoginPage.qml:217
+#: ../qml/PasswordLoginPage.qml:294
 msgid "Delete"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgid "Failed to load passwords"
 msgstr ""
 
 #: ../qml/FolderPasswordListPage.qml:45 ../qml/PasswordCardPage.qml:49
-#: ../qml/PasswordListPage.qml:46 ../qml/PasswordLoginPage.qml:45
+#: ../qml/PasswordListPage.qml:46 ../qml/PasswordLoginPage.qml:50
 #: ../qml/TrashListPage.qml:46
 msgid "%1 copied to clipboard"
 msgstr ""
@@ -198,7 +198,7 @@ msgid "No passwords in this folder"
 msgstr ""
 
 #: ../qml/FolderPasswordListPage.qml:111 ../qml/PasswordListPage.qml:112
-#: ../qml/PasswordLoginPage.qml:93 ../qml/PasswordLoginPage.qml:96
+#: ../qml/PasswordLoginPage.qml:154 ../qml/PasswordLoginPage.qml:157
 #: ../qml/TrashListPage.qml:110 ../qml/UpsertLoginPage.qml:154
 msgid "Username"
 msgstr ""
@@ -209,8 +209,8 @@ msgid "No username"
 msgstr ""
 
 #: ../qml/FolderPasswordListPage.qml:116 ../qml/LoginPage.qml:135
-#: ../qml/PasswordListPage.qml:117 ../qml/PasswordLoginPage.qml:100
-#: ../qml/PasswordLoginPage.qml:106 ../qml/TrashListPage.qml:115
+#: ../qml/PasswordListPage.qml:117 ../qml/PasswordLoginPage.qml:161
+#: ../qml/PasswordLoginPage.qml:167 ../qml/TrashListPage.qml:115
 #: ../qml/UpsertLoginPage.qml:165
 msgid "Password"
 msgstr ""
@@ -285,18 +285,18 @@ msgstr ""
 msgid "Sealed"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:76 ../qml/PasswordLoginPage.qml:72
+#: ../qml/PasswordCardPage.qml:76 ../qml/PasswordLoginPage.qml:133
 msgid "Main"
 msgstr ""
 
 #: ../qml/PasswordCardPage.qml:79 ../qml/PasswordCardPage.qml:81
-#: ../qml/PasswordLoginPage.qml:75 ../qml/PasswordLoginPage.qml:77
+#: ../qml/PasswordLoginPage.qml:136 ../qml/PasswordLoginPage.qml:138
 #: ../qml/UpsertCardPage.qml:145 ../qml/UpsertLoginPage.qml:142
 msgid "Name"
 msgstr ""
 
 #: ../qml/PasswordCardPage.qml:86 ../qml/PasswordCardPage.qml:88
-#: ../qml/PasswordLoginPage.qml:82 ../qml/PasswordLoginPage.qml:84
+#: ../qml/PasswordLoginPage.qml:143 ../qml/PasswordLoginPage.qml:145
 #: ../qml/UpsertCardPage.qml:279 ../qml/UpsertLoginPage.qml:235
 msgid "Folder"
 msgstr ""
@@ -329,54 +329,54 @@ msgstr ""
 msgid "Security Code"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:146 ../qml/PasswordLoginPage.qml:130
+#: ../qml/PasswordCardPage.qml:146 ../qml/PasswordLoginPage.qml:189
 msgid "Misc"
 msgstr ""
 
 #: ../qml/PasswordCardPage.qml:151 ../qml/PasswordCardPage.qml:154
-#: ../qml/PasswordLoginPage.qml:133 ../qml/PasswordLoginPage.qml:136
+#: ../qml/PasswordLoginPage.qml:192 ../qml/PasswordLoginPage.qml:195
 #: ../qml/UpsertCardPage.qml:240 ../qml/UpsertLoginPage.qml:185
 msgid "Notes"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:159 ../qml/PasswordLoginPage.qml:140
+#: ../qml/PasswordCardPage.qml:159 ../qml/PasswordLoginPage.qml:199
 msgid "Created"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:162 ../qml/PasswordLoginPage.qml:143
+#: ../qml/PasswordCardPage.qml:162 ../qml/PasswordLoginPage.qml:202
 msgid "Created date"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:167 ../qml/PasswordLoginPage.qml:147
+#: ../qml/PasswordCardPage.qml:167 ../qml/PasswordLoginPage.qml:206
 msgid "Updated"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:169 ../qml/PasswordLoginPage.qml:149
+#: ../qml/PasswordCardPage.qml:169 ../qml/PasswordLoginPage.qml:208
 msgid "Updated date"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:190 ../qml/PasswordLoginPage.qml:170
+#: ../qml/PasswordCardPage.qml:190 ../qml/PasswordLoginPage.qml:247
 msgid "Edit"
 msgstr ""
 
 #: ../qml/PasswordCardPage.qml:212 ../qml/PasswordListPage.qml:205
-#: ../qml/PasswordLoginPage.qml:189 ../qml/TrashListPage.qml:222
+#: ../qml/PasswordLoginPage.qml:266 ../qml/TrashListPage.qml:222
 msgid "Trash"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:226 ../qml/PasswordLoginPage.qml:203
+#: ../qml/PasswordCardPage.qml:226 ../qml/PasswordLoginPage.qml:280
 msgid "Restore"
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:272 ../qml/PasswordLoginPage.qml:249
+#: ../qml/PasswordCardPage.qml:272 ../qml/PasswordLoginPage.qml:327
 msgid "Restoring item..."
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:278 ../qml/PasswordLoginPage.qml:255
+#: ../qml/PasswordCardPage.qml:278 ../qml/PasswordLoginPage.qml:333
 msgid "Deleting item..."
 msgstr ""
 
-#: ../qml/PasswordCardPage.qml:284 ../qml/PasswordLoginPage.qml:261
+#: ../qml/PasswordCardPage.qml:284 ../qml/PasswordLoginPage.qml:339
 msgid "Moving to trash..."
 msgstr ""
 
@@ -392,20 +392,32 @@ msgstr ""
 msgid "Passwords"
 msgstr ""
 
-#: ../qml/PasswordLoginPage.qml:90
-msgid "Credentials"
-msgstr ""
-
-#: ../qml/PasswordLoginPage.qml:111
-msgid "TOTP"
-msgstr ""
-
-#: ../qml/PasswordLoginPage.qml:112
-msgid "Tap to copy"
-msgstr ""
-
-#: ../qml/PasswordLoginPage.qml:116
+#: ../qml/PasswordLoginPage.qml:75
 msgid "TOTP Code"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:77
+msgid "TOTP unavailable"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:84
+msgid "TOTP - Loading..."
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:87
+msgid "TOTP - Unavailable"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:89
+msgid "TOTP - %1 seconds remaining"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:97
+msgid "Unavailable"
+msgstr ""
+
+#: ../qml/PasswordLoginPage.qml:151
+msgid "Credentials"
 msgstr ""
 
 #: ../qml/TrashListPage.qml:39 ../qml/TrashListPage.qml:198
