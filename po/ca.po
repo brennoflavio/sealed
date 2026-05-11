@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-02 04:51+0000\n"
-"PO-Revision-Date: 2026-04-28 17:09+0000\n"
+"PO-Revision-Date: 2026-05-11 15:08+0000\n"
 "Last-Translator: Walter Garcia-Fontes <walter.garcia@upf.edu>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/ubports/sealed/"
 "ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.5-dev\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -509,7 +509,7 @@ msgstr "Notes addicionals..."
 
 #: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
 msgid "Favorite"
-msgstr "Preferit"
+msgstr "Preferida"
 
 #: ../qml/UpsertCardPage.qml:263
 msgid "Mark this card as a favorite"
