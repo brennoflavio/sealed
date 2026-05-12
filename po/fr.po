@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
 "PO-Revision-Date: 2026-05-12 15:11+0000\n"
-"Last-Translator: libermax <libremax@protonmail.com>\n"
+"Last-Translator: Vlad Nirky <nirky.vlad@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/ubports/sealed/"
 "fr/>\n"
 "Language: fr\n"
@@ -521,7 +521,7 @@ msgstr ""
 
 #: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
 msgid "Favorite"
-msgstr "Favori"
+msgstr "Favoris"
 
 #: ../qml/UpsertCardPage.qml:263
 msgid "Mark this card as a favorite"
