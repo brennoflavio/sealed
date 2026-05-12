@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-05-11 15:08+0000\n"
+"PO-Revision-Date: 2026-05-12 15:11+0000\n"
 "Last-Translator: Walter Garcia-Fontes <walter.garcia@upf.edu>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/ubports/sealed/"
 "ca/>\n"
@@ -400,7 +400,7 @@ msgstr "Codi TOTP"
 
 #: ../qml/PasswordLoginPage.qml:77
 msgid "TOTP unavailable"
-msgstr ""
+msgstr "TOTP no disponible"
 
 #: ../qml/PasswordLoginPage.qml:84
 #, fuzzy
@@ -410,15 +410,15 @@ msgstr "Carregant..."
 
 #: ../qml/PasswordLoginPage.qml:87
 msgid "TOTP - Unavailable"
-msgstr ""
+msgstr "TOTP - No disponible"
 
 #: ../qml/PasswordLoginPage.qml:89
 msgid "TOTP - %1 seconds remaining"
-msgstr ""
+msgstr "TOTP - %1 segons restants"
 
 #: ../qml/PasswordLoginPage.qml:97
 msgid "Unavailable"
-msgstr ""
+msgstr "No disponible"
 
 #: ../qml/PasswordLoginPage.qml:151
 msgid "Credentials"
