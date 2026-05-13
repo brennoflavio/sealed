@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-05-12 15:11+0000\n"
+"PO-Revision-Date: 2026-05-13 17:11+0000\n"
 "Last-Translator: Walter Garcia-Fontes <walter.garcia@upf.edu>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/ubports/sealed/"
 "ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.5.dev0\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -403,10 +403,8 @@ msgid "TOTP unavailable"
 msgstr "TOTP no disponible"
 
 #: ../qml/PasswordLoginPage.qml:84
-#, fuzzy
-#| msgid "Loading..."
 msgid "TOTP - Loading..."
-msgstr "Carregant..."
+msgstr "TOTP - Carregant..."
 
 #: ../qml/PasswordLoginPage.qml:87
 msgid "TOTP - Unavailable"
