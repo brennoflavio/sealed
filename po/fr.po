@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-05-12 15:11+0000\n"
+"PO-Revision-Date: 2026-05-15 15:11+0000\n"
 "Last-Translator: Vlad Nirky <nirky.vlad@protonmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/ubports/sealed/"
 "fr/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.5-dev\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -589,11 +589,11 @@ msgstr ""
 
 #: ../qml/lib/CustomFieldsList.qml:16 ../qml/lib/CustomFieldsList.qml:32
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../qml/lib/CustomFieldsList.qml:16 ../qml/lib/CustomFieldsList.qml:32
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../qml/lib/CustomFieldsList.qml:20
 msgid "Linked: Username"
