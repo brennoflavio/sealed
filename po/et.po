@@ -8,84 +8,86 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-05-21 21:11+0000\n"
+"Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Estonian <https://hosted.weblate.org/projects/ubports/sealed/"
+"et/>\n"
 "Language: et\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
-msgstr ""
+msgstr "Salvestan serveri võrguaadressi…"
 
 #: ../qml/ConfigurationPage.qml:59
 msgid "Logging out..."
-msgstr ""
+msgstr "Login välja…"
 
 #: ../qml/ConfigurationPage.qml:99
 msgid "Bitwarden Server"
-msgstr ""
+msgstr "Bitwardeni server"
 
 #: ../qml/ConfigurationPage.qml:105
 msgid "Server URL"
-msgstr ""
+msgstr "Serveri võrguaadress"
 
 #: ../qml/ConfigurationPage.qml:106
 msgid "https://vault.bitwarden.com"
-msgstr ""
+msgstr "https://vault.bitwarden.com"
 
 #: ../qml/ConfigurationPage.qml:111
 msgid "Save Server URL"
-msgstr ""
+msgstr "Salvesta serveri võrguaadress"
 
 #: ../qml/ConfigurationPage.qml:134
 msgid "Account"
-msgstr ""
+msgstr "Kasutajakonto"
 
 #: ../qml/ConfigurationPage.qml:137
 msgid "Logout"
-msgstr ""
+msgstr "Logi välja"
 
 #: ../qml/ConfigurationPage.qml:160
 msgid "Privacy"
-msgstr ""
+msgstr "Privaatsus"
 
 #: ../qml/ConfigurationPage.qml:164
 msgid "Crash logs"
-msgstr ""
+msgstr "Kokkujooksmise logid"
 
 #: ../qml/ConfigurationPage.qml:165
 msgid "Send anonymous crash reports"
-msgstr ""
+msgstr "Saada arendajale anonüümseid kokkujooksmise aruandeid"
 
 #: ../qml/ConfigurationPage.qml:207
 msgid "Configuration"
-msgstr ""
+msgstr "Seadistused"
 
 #: ../qml/FolderListPage.qml:36 ../qml/FolderListPage.qml:377
 msgid "Failed to load folders"
-msgstr ""
+msgstr "Kaustade laadimine ei õnnestunud"
 
 #: ../qml/FolderListPage.qml:57
 msgid "Search folders..."
-msgstr ""
+msgstr "Otsi kaustu…"
 
 #: ../qml/FolderListPage.qml:59 ../qml/UpsertCardPage.qml:365
 #: ../qml/UpsertLoginPage.qml:321
 msgid "Loading folders..."
-msgstr ""
+msgstr "Laadin kaustu…"
 
 #: ../qml/FolderListPage.qml:59
 msgid "No folders found"
-msgstr ""
+msgstr "Kaustu ei leidu"
 
 #: ../qml/FolderListPage.qml:109 ../qml/FolderPasswordListPage.qml:178
 #: ../qml/PasswordListPage.qml:179 ../qml/TrashListPage.qml:175
 msgid "Refresh"
-msgstr ""
+msgstr "Värskenda andmeid"
 
 #: ../qml/FolderListPage.qml:111
 msgid "Refreshing folders..."
