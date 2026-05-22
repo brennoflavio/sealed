@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-05-20 18:11+0000\n"
+"PO-Revision-Date: 2026-05-23 09:12+0000\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/ubports/sealed/nl/>"
 "\n"
@@ -82,7 +82,7 @@ msgstr "Bezig met laden van mappen…"
 
 #: ../qml/FolderListPage.qml:59
 msgid "No folders found"
-msgstr "Er zijn geen mappen gevonden"
+msgstr "Er zijn geen mappen aangetroffen"
 
 #: ../qml/FolderListPage.qml:109 ../qml/FolderPasswordListPage.qml:178
 #: ../qml/PasswordListPage.qml:179 ../qml/TrashListPage.qml:175
