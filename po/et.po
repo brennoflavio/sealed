@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-05-21 21:11+0000\n"
+"PO-Revision-Date: 2026-05-25 11:12+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/ubports/sealed/"
 "et/>\n"
@@ -91,136 +91,136 @@ msgstr "Värskenda andmeid"
 
 #: ../qml/FolderListPage.qml:111
 msgid "Refreshing folders..."
-msgstr ""
+msgstr "Värskendan kaustu…"
 
 #: ../qml/FolderListPage.qml:119 ../qml/FolderPasswordListPage.qml:188
 #: ../qml/PasswordListPage.qml:189
 msgid "Add"
-msgstr ""
+msgstr "Lisa"
 
 #: ../qml/FolderListPage.qml:136
 msgid "Add New Folder"
-msgstr ""
+msgstr "Lisa uus kaust"
 
 #: ../qml/FolderListPage.qml:141 ../qml/FolderListPage.qml:221
 msgid "Folder name"
-msgstr ""
+msgstr "Kausta nimi"
 
 #: ../qml/FolderListPage.qml:165 ../qml/FolderListPage.qml:246
 #: ../qml/FolderListPage.qml:324 ../qml/PasswordLoginPage.qml:94
 msgid "Loading..."
-msgstr ""
+msgstr "Laadin andmeid..."
 
 #: ../qml/FolderListPage.qml:173 ../qml/FolderListPage.qml:254
 #: ../qml/UpsertCardPage.qml:129 ../qml/UpsertLoginPage.qml:124
 msgid "Save"
-msgstr ""
+msgstr "Salvesta"
 
 #: ../qml/FolderListPage.qml:183
 msgid "Folder created successfully"
-msgstr ""
+msgstr "Kausta lisamine õnnestus"
 
 #: ../qml/FolderListPage.qml:186
 msgid "Failed to create folder"
-msgstr ""
+msgstr "Kausta lisamine ei õnnestunud"
 
 #: ../qml/FolderListPage.qml:194 ../qml/FolderListPage.qml:275
 #: ../qml/FolderListPage.qml:353 ../qml/FolderPasswordListPage.qml:231
 #: ../qml/PasswordListPage.qml:248
 msgid "Cancel"
-msgstr ""
+msgstr "Katkesta"
 
 #: ../qml/FolderListPage.qml:216
 msgid "Edit Folder"
-msgstr ""
+msgstr "Muuda kausta"
 
 #: ../qml/FolderListPage.qml:264
 msgid "Folder updated successfully"
-msgstr ""
+msgstr "Kausta uuendamine õnnestus"
 
 #: ../qml/FolderListPage.qml:267
 msgid "Failed to update folder"
-msgstr ""
+msgstr "Kausta uuendamine ei õnnestunud"
 
 #: ../qml/FolderListPage.qml:297
 msgid "Delete Folder"
-msgstr ""
+msgstr "Kustuta kaust"
 
 #: ../qml/FolderListPage.qml:302
 msgid "Are you sure you want to delete \"%1\"?"
-msgstr ""
+msgstr "Kas oled kindel, et soovid „%1$s“ kausta kustutada?"
 
 #: ../qml/FolderListPage.qml:332 ../qml/PasswordCardPage.qml:240
 #: ../qml/PasswordLoginPage.qml:294
 msgid "Delete"
-msgstr ""
+msgstr "Kustuta"
 
 #: ../qml/FolderListPage.qml:342
 msgid "Folder deleted successfully"
-msgstr ""
+msgstr "Kausta kustutamine õnnestus"
 
 #: ../qml/FolderListPage.qml:345
 msgid "Failed to delete folder"
-msgstr ""
+msgstr "Kasutaja kustutamine ei õnnestunud"
 
 #: ../qml/FolderListPage.qml:375
 msgid "Folders synced"
-msgstr ""
+msgstr "Kaustad on sünkroonitud"
 
 #: ../qml/FolderListPage.qml:382 ../qml/FolderPasswordListPage.qml:261
 #: ../qml/PasswordListPage.qml:279 ../qml/TrashListPage.qml:203
 msgid "An error occurred"
-msgstr ""
+msgstr "Tekkis viga"
 
 #: ../qml/FolderListPage.qml:401 ../qml/PasswordListPage.qml:197
 msgid "Folders"
-msgstr ""
+msgstr "Kaustad"
 
 #: ../qml/FolderPasswordListPage.qml:38 ../qml/FolderPasswordListPage.qml:256
 #: ../qml/PasswordListPage.qml:39 ../qml/PasswordListPage.qml:273
 msgid "Failed to load passwords"
-msgstr ""
+msgstr "Salasõnade laadimine ei õnnestunud"
 
 #: ../qml/FolderPasswordListPage.qml:45 ../qml/PasswordCardPage.qml:49
 #: ../qml/PasswordListPage.qml:46 ../qml/PasswordLoginPage.qml:50
 #: ../qml/TrashListPage.qml:46
 msgid "%1 copied to clipboard"
-msgstr ""
+msgstr "„%1“ on kopeeritud lõikelauale"
 
 #: ../qml/FolderPasswordListPage.qml:95 ../qml/PasswordListPage.qml:96
 msgid "Search passwords..."
-msgstr ""
+msgstr "Otsi salasõnu…"
 
 #: ../qml/FolderPasswordListPage.qml:97
 msgid "Loading passwords..."
-msgstr ""
+msgstr "Laadin salasõnu…"
 
 #: ../qml/FolderPasswordListPage.qml:97
 msgid "No passwords in this folder"
-msgstr ""
+msgstr "Selles kaustas pole salasõnu"
 
 #: ../qml/FolderPasswordListPage.qml:111 ../qml/PasswordListPage.qml:112
 #: ../qml/PasswordLoginPage.qml:154 ../qml/PasswordLoginPage.qml:157
 #: ../qml/TrashListPage.qml:110 ../qml/UpsertLoginPage.qml:154
 msgid "Username"
-msgstr ""
+msgstr "Kasutajanimi"
 
 #: ../qml/FolderPasswordListPage.qml:113 ../qml/PasswordListPage.qml:114
 #: ../qml/TrashListPage.qml:112
 msgid "No username"
-msgstr ""
+msgstr "Kasutajanime pole"
 
 #: ../qml/FolderPasswordListPage.qml:116 ../qml/LoginPage.qml:135
 #: ../qml/PasswordListPage.qml:117 ../qml/PasswordLoginPage.qml:161
 #: ../qml/PasswordLoginPage.qml:167 ../qml/TrashListPage.qml:115
 #: ../qml/UpsertLoginPage.qml:165
 msgid "Password"
-msgstr ""
+msgstr "Salasõna"
 
 #: ../qml/FolderPasswordListPage.qml:118 ../qml/PasswordListPage.qml:119
 #: ../qml/TrashListPage.qml:117
 msgid "No password"
-msgstr ""
+msgstr "Salasõna puudub"
 
 #: ../qml/FolderPasswordListPage.qml:180 ../qml/PasswordListPage.qml:181
 msgid "Refreshing passwords..."
@@ -521,7 +521,7 @@ msgstr ""
 
 #: ../qml/UpsertCardPage.qml:262 ../qml/UpsertLoginPage.qml:218
 msgid "Favorite"
-msgstr ""
+msgstr "Lemmik"
 
 #: ../qml/UpsertCardPage.qml:263
 msgid "Mark this card as a favorite"
