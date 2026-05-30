@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-04-18 10:09+0000\n"
+"PO-Revision-Date: 2026-05-31 12:01+0000\n"
 "Last-Translator: Serhii Horichenko <serhii@horichenko.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/ubports/sealed/"
 "uk/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -401,25 +401,23 @@ msgstr "Код TOTP"
 
 #: ../qml/PasswordLoginPage.qml:77
 msgid "TOTP unavailable"
-msgstr ""
+msgstr "Режим TOTP не доступний"
 
 #: ../qml/PasswordLoginPage.qml:84
-#, fuzzy
-#| msgid "Loading..."
 msgid "TOTP - Loading..."
-msgstr "Завантажується..."
+msgstr "Завантажується TOTP..."
 
 #: ../qml/PasswordLoginPage.qml:87
 msgid "TOTP - Unavailable"
-msgstr ""
+msgstr "TOTP - Не доступний"
 
 #: ../qml/PasswordLoginPage.qml:89
 msgid "TOTP - %1 seconds remaining"
-msgstr ""
+msgstr "TOTP - залишилося %1 секунд"
 
 #: ../qml/PasswordLoginPage.qml:97
 msgid "Unavailable"
-msgstr ""
+msgstr "Недоступне"
 
 #: ../qml/PasswordLoginPage.qml:151
 msgid "Credentials"
