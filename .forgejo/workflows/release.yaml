@@ -1,0 +1,82 @@
+name: Publish Sealed
+enable-email-notifications: true
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CLICKABLE_FRAMEWORK: ubuntu-touch-24.04-1.x
+
+jobs:
+  publish:
+    runs-on: clickable-ut24-1x
+
+    steps:
+      - name: Install Node.js for JavaScript actions
+        run: |
+          set -eu
+          case "$(uname -m)" in
+            x86_64) NODE_ARCH=x64 ;;
+            aarch64) NODE_ARCH=arm64 ;;
+            *)
+              echo "Unsupported architecture: $(uname -m)"
+              exit 1
+              ;;
+          esac
+          NODE_VERSION=v20.19.2
+          NODE_FILENAME="node-$NODE_VERSION-linux-$NODE_ARCH.tar.gz"
+          NODE_DIR="$HOME/.local/node-$NODE_VERSION"
+          curl -fsSL "https://nodejs.org/dist/$NODE_VERSION/$NODE_FILENAME" -o "/tmp/$NODE_FILENAME"
+          curl -fsSL "https://nodejs.org/dist/$NODE_VERSION/SHASUMS256.txt" -o /tmp/SHASUMS256.txt
+          cd /tmp
+          grep " $NODE_FILENAME$" SHASUMS256.txt | sha256sum -c -
+          mkdir -p "$NODE_DIR"
+          tar -xzf "/tmp/$NODE_FILENAME" -C "$NODE_DIR" --strip-components=1
+          export PATH="$NODE_DIR/bin:$PATH"
+          echo "$NODE_DIR/bin" >> "$GITHUB_PATH"
+
+      - name: Checkout code
+        uses: https://code.forgejo.org/actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify runner tooling
+        run: |
+          set -eu
+          node --version
+          clickable --version
+          docker info >/dev/null
+
+      - name: Download and setup bw
+        run: |
+          mkdir -p lib
+          curl -L -o lib/bw https://f005.backblazeb2.com/file/sealed-bitwarden-cli/bw
+          chmod +x lib/bw
+
+      - name: Capture last commit message
+        id: commit
+        run: |
+          message=$(git log -1 --pretty=%B)
+          delimiter=$(python3 -c 'import uuid; print(uuid.uuid4())')
+          {
+            echo "message<<${delimiter}"
+            echo "$message"
+            echo "${delimiter}"
+          } >> "${FORGEJO_OUTPUT:-$GITHUB_OUTPUT}"
+
+      - name: Build
+        run: clickable build --arch arm64
+
+      - name: Deploy
+        env:
+          OPENSTORE_API_KEY: ${{ secrets.OPENSTORE_API_KEY }}
+          RELEASE_MESSAGE: ${{ steps.commit.outputs.message }}
+        run: clickable publish --arch arm64 -- "$RELEASE_MESSAGE"
+
+concurrency:
+  group: publish-sealed-master
+  cancel-in-progress: false
