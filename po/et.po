@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-06 16:11+0000\n"
-"PO-Revision-Date: 2026-05-25 11:12+0000\n"
+"PO-Revision-Date: 2026-07-11 12:01+0000\n"
 "Last-Translator: Priit Jõerüüt <jrthwlate@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Estonian <https://hosted.weblate.org/projects/ubports/sealed/"
 "et/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.6.dev0\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: ../qml/ConfigurationPage.qml:44
 msgid "Saving server URL..."
@@ -224,48 +224,48 @@ msgstr "Salasõna puudub"
 
 #: ../qml/FolderPasswordListPage.qml:180 ../qml/PasswordListPage.qml:181
 msgid "Refreshing passwords..."
-msgstr ""
+msgstr "Laadin salasõnu uuesti…"
 
 #: ../qml/FolderPasswordListPage.qml:202 ../qml/PasswordListPage.qml:219
 msgid "Add New Entry"
-msgstr ""
+msgstr "Lisa uus kirje"
 
 #: ../qml/FolderPasswordListPage.qml:203 ../qml/PasswordListPage.qml:220
 msgid "Choose the type of entry you want to add:"
-msgstr ""
+msgstr "Vali lisatava kirje tüüp:"
 
 #: ../qml/FolderPasswordListPage.qml:211 ../qml/LoginPage.qml:110
 #: ../qml/PasswordListPage.qml:228
 msgid "Login"
-msgstr ""
+msgstr "Logi sisse"
 
 #: ../qml/FolderPasswordListPage.qml:221 ../qml/PasswordListPage.qml:238
 msgid "Card"
-msgstr ""
+msgstr "Kaart"
 
 #: ../qml/FolderPasswordListPage.qml:254 ../qml/PasswordListPage.qml:271
 msgid "Passwords synced"
-msgstr ""
+msgstr "Salasõnad on sünkroonis"
 
 #: ../qml/LoginPage.qml:68
 msgid "Login failed"
-msgstr ""
+msgstr "Sisselogimine ei õnnestunud"
 
 #: ../qml/LoginPage.qml:101
 msgid "Bitwarden Login"
-msgstr ""
+msgstr "Sisselogimine Bitwardenisse"
 
 #: ../qml/LoginPage.qml:123
 msgid "Email"
-msgstr ""
+msgstr "E-posti aadress"
 
 #: ../qml/LoginPage.qml:124
 msgid "Enter your email"
-msgstr ""
+msgstr "Sisesta oma e-posti aadress"
 
 #: ../qml/LoginPage.qml:136
 msgid "Enter your password"
-msgstr ""
+msgstr "Sisesta oma salasõna"
 
 #: ../qml/LoginPage.qml:148
 msgid "Two-Factor Code - Only Authenticator app is supported"
