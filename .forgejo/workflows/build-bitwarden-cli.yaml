@@ -1,0 +1,181 @@
+name: Build Bitwarden CLI
+enable-email-notifications: true
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: build-bitwarden-cli
+  cancel-in-progress: false
+
+jobs:
+  check-release:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.release.outputs.build }}
+      tag: ${{ steps.upstream.outputs.tag }}
+      version: ${{ steps.upstream.outputs.version }}
+      commit: ${{ steps.upstream.outputs.commit }}
+      marker_tag: ${{ steps.upstream.outputs.marker_tag }}
+
+    steps:
+      - name: Find the latest upstream CLI release
+        id: upstream
+        run: |
+          set -eu
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          import urllib.request
+
+          request = urllib.request.Request(
+              "https://api.github.com/repos/bitwarden/clients/releases?per_page=100",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "User-Agent": "sealed-bitwarden-cli-builder",
+              },
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              releases = json.load(response)
+
+          release = next(
+              (
+                  item
+                  for item in releases
+                  if not item["draft"]
+                  and not item["prerelease"]
+                  and re.fullmatch(r"cli-v[0-9]+(?:\.[0-9]+)+", item["tag_name"])
+              ),
+              None,
+          )
+          if release is None:
+              raise SystemExit("No stable Bitwarden CLI release found")
+
+          tag = release["tag_name"]
+          commit = release["target_commitish"]
+          if not re.fullmatch(r"[0-9a-f]{40}", commit):
+              raise SystemExit(f"Unexpected target commit for {tag}: {commit}")
+
+          version = tag.removeprefix("cli-v")
+          output = os.environ.get("FORGEJO_OUTPUT") or os.environ["GITHUB_OUTPUT"]
+          with open(output, "a", encoding="utf-8") as fh:
+              fh.write(f"tag={tag}\n")
+              fh.write(f"version={version}\n")
+              fh.write(f"commit={commit}\n")
+              fh.write(f"marker_tag=sealed-bw-cli-{version}\n")
+          PY
+
+      - name: Check whether this release was already built
+        id: release
+        env:
+          FORGEJO_SERVER: ${{ github.server_url }}
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_TOKEN: ${{ forge.token }}
+          MARKER_TAG: ${{ steps.upstream.outputs.marker_tag }}
+        run: |
+          set -eu
+          remote="https://oauth2:${FORGEJO_TOKEN}@${FORGEJO_SERVER#https://}/${FORGEJO_REPOSITORY}.git"
+          set +e
+          git ls-remote --exit-code --tags "$remote" "refs/tags/${MARKER_TAG}" >/dev/null 2>&1
+          status=$?
+          set -e
+          case "$status" in
+            0)
+              echo "build=false" >> "${FORGEJO_OUTPUT:-$GITHUB_OUTPUT}"
+              echo "Bitwarden CLI ${MARKER_TAG#sealed-bw-cli-} was already built"
+              ;;
+            2)
+              echo "build=true" >> "${FORGEJO_OUTPUT:-$GITHUB_OUTPUT}"
+              ;;
+            *)
+              echo "Unable to check for ${MARKER_TAG}" >&2
+              exit "$status"
+              ;;
+          esac
+
+  build:
+    needs: check-release
+    if: needs.check-release.outputs.build == 'true'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone upstream release
+        env:
+          UPSTREAM_TAG: ${{ needs.check-release.outputs.tag }}
+          UPSTREAM_COMMIT: ${{ needs.check-release.outputs.commit }}
+        run: |
+          set -eu
+          git clone --depth 1 --branch "$UPSTREAM_TAG" https://github.com/bitwarden/clients.git bitwarden-clients
+          test "$(git -C bitwarden-clients rev-parse HEAD)" = "$UPSTREAM_COMMIT"
+
+      - name: Set up Node.js
+        uses: https://code.forgejo.org/actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: bitwarden-clients/apps/cli/.nvmrc
+
+      - name: Build the Linux arm64 CLI
+        working-directory: bitwarden-clients
+        run: |
+          set -eu
+          npm install --global npm@11.18.0
+          npm ci
+          rm -rf node_modules/@bitwarden/commercial-sdk-internal
+          cd apps/cli
+          npm run dist:oss:lin-arm64 --quiet
+
+      - name: Verify and stage the CLI
+        env:
+          VERSION: ${{ needs.check-release.outputs.version }}
+          UPSTREAM_TAG: ${{ needs.check-release.outputs.tag }}
+          UPSTREAM_COMMIT: ${{ needs.check-release.outputs.commit }}
+        run: |
+          set -eu
+          binary="bitwarden-clients/apps/cli/dist/oss/linux-arm64/bw"
+          test -x "$binary"
+          file "$binary" | grep -q 'ARM aarch64'
+          mkdir artifact
+          cp "$binary" artifact/bw
+          (
+            cd artifact
+            sha256sum bw > bw.sha256
+          )
+          printf 'version=%s\nsource_tag=%s\nsource_commit=%s\n' "$VERSION" "$UPSTREAM_TAG" "$UPSTREAM_COMMIT" > artifact/metadata
+
+      - name: Upload CLI artifact
+        uses: https://code.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5
+        with:
+          name: bw-linux-arm64-${{ needs.check-release.outputs.version }}
+          path: artifact/
+          if-no-files-found: error
+
+  record-build:
+    needs: [check-release, build]
+    if: forgejo.ref == 'refs/heads/master' && needs.check-release.outputs.build == 'true' && needs.build.result == 'success'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Record the completed build
+        env:
+          FORGEJO_SERVER: ${{ github.server_url }}
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_TOKEN: ${{ forge.token }}
+          MARKER_TAG: ${{ needs.check-release.outputs.marker_tag }}
+          UPSTREAM_TAG: ${{ needs.check-release.outputs.tag }}
+        run: |
+          set -eu
+          remote="https://oauth2:${FORGEJO_TOKEN}@${FORGEJO_SERVER#https://}/${FORGEJO_REPOSITORY}.git"
+          git clone --depth 1 "$remote" sealed
+          cd sealed
+          git config user.name 'forgejo-actions'
+          git config user.email 'contato@brennoflavio.com.br'
+          git tag -a "$MARKER_TAG" -m "Built Bitwarden CLI ${UPSTREAM_TAG}"
+          git push origin "$MARKER_TAG"
