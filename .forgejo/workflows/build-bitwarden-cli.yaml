@@ -103,7 +103,7 @@ jobs:
     if: needs.check-release.outputs.build == 'true'
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-arm64
 
     steps:
       - name: Clone upstream release
