@@ -155,9 +155,118 @@ jobs:
           path: artifact/
           if-no-files-found: error
 
-  record-build:
+  update-download-script:
     needs: [check-release, build]
     if: forgejo.ref == 'refs/heads/master' && needs.check-release.outputs.build == 'true' && needs.build.result == 'success'
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the default branch
+        uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: master
+          persist-credentials: false
+
+      - name: Check for an existing pull request
+        id: pull-request
+        env:
+          FORGEJO_SERVER: ${{ github.server_url }}
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_TOKEN: ${{ forge.token }}
+          VERSION: ${{ needs.check-release.outputs.version }}
+        run: |
+          set -eu
+          node <<'NODE'
+          const { appendFileSync } = require('node:fs')
+
+          async function main() {
+            const branch = `automation/update-bitwarden-cli-${process.env.VERSION}`
+            const [owner] = process.env.FORGEJO_REPOSITORY.split('/')
+            let existing = ''
+
+            for (let page = 1; ; page += 1) {
+              const url = new URL(`/api/v1/repos/${process.env.FORGEJO_REPOSITORY}/pulls`, process.env.FORGEJO_SERVER)
+              url.searchParams.set('state', 'open')
+              url.searchParams.set('limit', '50')
+              url.searchParams.set('page', String(page))
+              const response = await fetch(url, {
+                headers: { Authorization: `token ${process.env.FORGEJO_TOKEN}` },
+              })
+              if (!response.ok) throw new Error(`Unable to list pull requests: ${response.status}`)
+              const pullRequests = await response.json()
+              const pullRequest = pullRequests.find(({ head }) =>
+                head?.ref === branch && head?.repo?.owner?.login === owner,
+              )
+              if (pullRequest) {
+                existing = String(pullRequest.number)
+                break
+              }
+              if (pullRequests.length < 50) break
+            }
+
+            appendFileSync(process.env.GITHUB_OUTPUT, `branch=${branch}\nexisting=${existing}\n`)
+          }
+
+          main().catch((error) => {
+            console.error(error)
+            process.exit(1)
+          })
+          NODE
+
+      - name: Update download script
+        env:
+          BRANCH: ${{ steps.pull-request.outputs.branch }}
+          VERSION: ${{ needs.check-release.outputs.version }}
+          FORGEJO_SERVER: ${{ github.server_url }}
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_TOKEN: ${{ forge.token }}
+        run: |
+          set -eu
+          git config user.name 'forgejo-actions'
+          git config user.email 'contato@brennoflavio.com.br'
+
+          git remote set-url origin "https://oauth2:${FORGEJO_TOKEN}@${FORGEJO_SERVER#https://}/${FORGEJO_REPOSITORY}.git"
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+          artifact_url="${FORGEJO_SERVER}/${FORGEJO_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts/bw-linux-arm64-${VERSION}"
+          sed -i "s|^BW_ARTIFACT_URL=.*|BW_ARTIFACT_URL='${artifact_url}'|" download-bw.sh
+
+          if ! git diff --quiet -- download-bw.sh; then
+            git add download-bw.sh
+            git commit -m "chore: update Bitwarden CLI to ${VERSION}"
+            git push origin "HEAD:refs/heads/${BRANCH}"
+          fi
+
+      - name: Create pull request
+        if: steps.pull-request.outputs.existing == ''
+        env:
+          BASE_BRANCH: master
+          BRANCH: ${{ steps.pull-request.outputs.branch }}
+          VERSION: ${{ needs.check-release.outputs.version }}
+          FORGEJO_SERVER: ${{ github.server_url }}
+          FORGEJO_REPOSITORY: ${{ github.repository }}
+          FORGEJO_TOKEN: ${{ forge.token }}
+        run: |
+          set -eu
+          owner="${FORGEJO_REPOSITORY%%/*}"
+          head="${owner}:${BRANCH}"
+          payload="$(printf '{\"title\":\"chore: update Bitwarden CLI to %s\",\"head\":\"%s\",\"base\":\"%s\",\"body\":\"Automated update of the Bitwarden CLI artifact to `%s`.\"}' "$VERSION" "$head" "$BASE_BRANCH" "$VERSION")"
+          curl -fsS -X POST "${FORGEJO_SERVER}/api/v1/repos/${FORGEJO_REPOSITORY}/pulls" \
+            --header "Authorization: token ${FORGEJO_TOKEN}" \
+            --header 'Content-Type: application/json' \
+            --data "$payload"
+
+  record-build:
+    needs: [check-release, build, update-download-script]
+    if: forgejo.ref == 'refs/heads/master' && needs.check-release.outputs.build == 'true' && needs.build.result == 'success' && needs.update-download-script.result == 'success'
     permissions:
       contents: write
     runs-on: ubuntu-latest

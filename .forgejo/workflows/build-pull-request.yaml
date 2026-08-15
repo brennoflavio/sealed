@@ -1,15 +1,21 @@
-name: Publish Sealed
+name: Build pull request
 enable-email-notifications: true
 
 on:
-  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
 
+env:
+  CLICKABLE_FRAMEWORK: ubuntu-touch-24.04-1.x
+
 jobs:
-  publish:
-    runs-on: clickable-ut24-1x-arm64
+  build:
+    if: forgejo.event.pull_request.head.repo.full_name == forgejo.repository
+    runs-on: clickable-ut24-1x
+    timeout-minutes: 45
 
     steps:
       - name: Install Node.js for JavaScript actions
@@ -19,7 +25,7 @@ jobs:
             x86_64) NODE_ARCH=x64 ;;
             aarch64) NODE_ARCH=arm64 ;;
             *)
-              echo "Unsupported architecture: $(uname -m)"
+              echo "Unsupported architecture: $(uname -m)" >&2
               exit 1
               ;;
           esac
@@ -32,11 +38,10 @@ jobs:
           grep " $NODE_FILENAME$" SHASUMS256.txt | sha256sum -c -
           mkdir -p "$NODE_DIR"
           tar -xzf "/tmp/$NODE_FILENAME" -C "$NODE_DIR" --strip-components=1
-          export PATH="$NODE_DIR/bin:$PATH"
           echo "$NODE_DIR/bin" >> "$GITHUB_PATH"
 
       - name: Checkout code
-        uses: https://code.forgejo.org/actions/checkout@v4
+        uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -48,26 +53,16 @@ jobs:
           clickable --version
           docker info >/dev/null
 
-      - name: Capture last commit message
-        id: commit
-        run: |
-          message=$(git log -1 --pretty=%B)
-          delimiter=$(python3 -c 'import uuid; print(uuid.uuid4())')
-          {
-            echo "message<<${delimiter}"
-            echo "$message"
-            echo "${delimiter}"
-          } >> "${FORGEJO_OUTPUT:-$GITHUB_OUTPUT}"
-
       - name: Build
         run: clickable build --arch arm64
 
-      - name: Deploy
-        env:
-          OPENSTORE_API_KEY: ${{ secrets.OPENSTORE_API_KEY }}
-          RELEASE_MESSAGE: ${{ steps.commit.outputs.message }}
-        run: clickable publish --arch arm64 -- "$RELEASE_MESSAGE"
+      - name: Upload Click package
+        uses: https://code.forgejo.org/actions/upload-artifact@ff15f0306b3f739f7b6fd43fb5d26cd321bd4de5
+        with:
+          name: sealed-click-arm64
+          path: build/*/app/*.click
+          if-no-files-found: error
 
 concurrency:
-  group: publish-sealed-master
-  cancel-in-progress: false
+  group: build-pull-request-${{ github.event.pull_request.number }}
+  cancel-in-progress: true

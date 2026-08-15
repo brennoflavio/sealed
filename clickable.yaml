@@ -1,10 +1,14 @@
 clickable_minimum_required: 8.0.0
 builder: cmake
 kill: qmlscene
+dependencies_host:
+  - unzip
 env_vars:
   UV_INSTALL_DIR: /usr/local
 image_setup:
   run:
-    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - env UV_INSTALL_DIR=/usr/local sh -c 'curl -LsSf https://astral.sh/uv/install.sh | sh'
+prebuild:
+  - /usr/bin/bash ${ROOT}/download-bw.sh
 postbuild:
   - /usr/bin/bash install/build-python-deps.sh

@@ -35,23 +35,7 @@ else()
     )
 endif()
 
-# Sets BUILD_VERSION: Either tag of the current git HEAD or devel build version with git hash
-execute_process(
-  COMMAND git describe --tags --abbrev=0 --exact-match
-  OUTPUT_VARIABLE BUILD_VERSION_RAW
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-  )
-if(NOT BUILD_VERSION_RAW)
-  execute_process(
-    COMMAND git describe --tags --abbrev=0
-    OUTPUT_VARIABLE LAST_VERSION_RAW
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-    )
-  string(TIMESTAMP BUILD_VERSION_RAW "${LAST_VERSION_RAW}.%y%m%d%H%M%S" UTC)
-endif(NOT BUILD_VERSION_RAW)
-string(SUBSTRING ${BUILD_VERSION_RAW} 1 -1 BUILD_VERSION)
+string(TIMESTAMP BUILD_VERSION "%y%m%d%H%M%S" UTC)
 message(STATUS "Build version is: ${BUILD_VERSION}")
 
 

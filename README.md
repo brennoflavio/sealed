@@ -6,20 +6,7 @@ A Bitwarden Password Manager Client for Ubuntu Touch
 
 ## Development
 
-To run this App, you'll need a copy of Bitwarden CLI (arm build).
-
-Currenlty Bitwarden does not provide arm linux builds on their GitHub releases.
-
-But you can grab a pre built binary from their [Github Action](https://github.com/bitwarden/clients/actions/workflows/build-cli.yml):
-- Open above link
-- Search for job "CLI linux-arm64 - open source license"
-- Inside the job, look for the step "Upload unix zip asset"
-- Open the logs, there will be an Artifact Download URL
-- Download and extract the binary inside the `lib` folder in the root of this repository
-
-This project expects to call the binary in the location `lib/bw`.
-
-For convenience, the binary that this application is currenlty developed can be [downloaded here](https://f005.backblazeb2.com/file/sealed-bitwarden-cli/bw)
+Clickable downloads the Bitwarden CLI arm64 build from the [Forgejo Actions workflow](https://git.brennoflavio.com.br/brennoflavio/sealed/actions?workflow=build-bitwarden-cli.yaml) before every build and places it at `lib/bw`.
 
 ## License
 
