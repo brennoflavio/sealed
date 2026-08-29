@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-15 03:09+0000\n"
-"PO-Revision-Date: 2026-08-28 18:44+0000\n"
+"PO-Revision-Date: 2026-08-30 08:16+0000\n"
 "Last-Translator: Alagirisamy Rengaraj <radhaalagirisamy@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/ubports/sealed/ta/>"
 "\n"
@@ -33,7 +33,7 @@ msgstr ""
 
 #: ../qml/ConfigurationPage.qml:105
 msgid "Server URL"
-msgstr ""
+msgstr "சேவையக முகவரி (யூஆர்எல்)"
 
 #: ../qml/ConfigurationPage.qml:106
 msgid "https://vault.bitwarden.com"
@@ -65,7 +65,7 @@ msgstr ""
 
 #: ../qml/ConfigurationPage.qml:207
 msgid "Configuration"
-msgstr ""
+msgstr "கட்டமைப்பு"
 
 #: ../qml/FolderListPage.qml:36 ../qml/FolderListPage.qml:377
 msgid "Failed to load folders"
@@ -114,7 +114,7 @@ msgstr ""
 #: ../qml/FolderListPage.qml:173 ../qml/FolderListPage.qml:254
 #: ../qml/UpsertCardPage.qml:129 ../qml/UpsertLoginPage.qml:124
 msgid "Save"
-msgstr ""
+msgstr "சேமி"
 
 #: ../qml/FolderListPage.qml:183
 msgid "Folder created successfully"
@@ -153,7 +153,7 @@ msgstr ""
 #: ../qml/FolderListPage.qml:332 ../qml/PasswordCardPage.qml:240
 #: ../qml/PasswordLoginPage.qml:294
 msgid "Delete"
-msgstr ""
+msgstr "நீக்கு"
 
 #: ../qml/FolderListPage.qml:342
 msgid "Folder deleted successfully"
@@ -203,7 +203,7 @@ msgstr ""
 #: ../qml/PasswordLoginPage.qml:154 ../qml/PasswordLoginPage.qml:157
 #: ../qml/TrashListPage.qml:110 ../qml/UpsertLoginPage.qml:154
 msgid "Username"
-msgstr ""
+msgstr "பயனர் பெயர்"
 
 #: ../qml/FolderPasswordListPage.qml:113 ../qml/PasswordListPage.qml:114
 #: ../qml/TrashListPage.qml:112
@@ -215,7 +215,7 @@ msgstr ""
 #: ../qml/PasswordLoginPage.qml:167 ../qml/TrashListPage.qml:115
 #: ../qml/UpsertLoginPage.qml:165
 msgid "Password"
-msgstr ""
+msgstr "கடவுச்சொல்"
 
 #: ../qml/FolderPasswordListPage.qml:118 ../qml/PasswordListPage.qml:119
 #: ../qml/TrashListPage.qml:117
@@ -265,7 +265,7 @@ msgstr ""
 
 #: ../qml/LoginPage.qml:136
 msgid "Enter your password"
-msgstr ""
+msgstr "உங்கள் கடவுச்சொல்லை உள்ளிடவும்"
 
 #: ../qml/LoginPage.qml:148
 msgid "Two-Factor Code - Only Authenticator app is supported"
