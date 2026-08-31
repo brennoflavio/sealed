@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: sealed.brennoflavio\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-08-15 03:09+0000\n"
-"PO-Revision-Date: 2026-08-30 08:16+0000\n"
+"PO-Revision-Date: 2026-08-31 09:55+0000\n"
 "Last-Translator: Alagirisamy Rengaraj <radhaalagirisamy@gmail.com>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/ubports/sealed/ta/>"
 "\n"
@@ -643,7 +643,7 @@ msgstr ""
 
 #: ../qml/ut_components/AppHeader.qml:94
 msgid "Settings"
-msgstr ""
+msgstr "அமைப்புக்கள்"
 
 #: ../qml/ut_components/Form.qml:67
 msgid "Submit"
